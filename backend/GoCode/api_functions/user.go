@@ -3,7 +3,7 @@ package api_functions
 import (
 	"fmt"
 	"net/http"
-	"os"
+	"ramluck-cloud/config"
 	"ramluck-cloud/tables"
 	"time"
 
@@ -130,7 +130,7 @@ func AuthMiddleware(db *gorm.DB) gin.HandlerFunc {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 				}
-				return []byte(GetJWTSecret()), nil
+				return []byte(config.JWT_SECRET), nil
 			})
 
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
@@ -177,16 +177,7 @@ func GenerateToken(user tables.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(GetJWTSecret()))
-}
-
-// Secure secret management
-func GetJWTSecret() string {
-	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		panic("JWT_SECRET environment variable not set")
-	}
-	return secret
+	return token.SignedString([]byte(config.JWT_SECRET))
 }
 
 // Updated GetAllUsers with admin check

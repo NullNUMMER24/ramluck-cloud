@@ -31,3 +31,10 @@ curl -X POST http://localhost:8088/api/login/register \
     "email": "newuser@example.cofm"
   }'
 ```
+#### Get admin token
+Get the admn token and saves it as env var:
+```bash
+ADMIN_TOKEN=$(curl -s -X POST http://localhost:8088/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin"}' | jq -r '.token')
+```
