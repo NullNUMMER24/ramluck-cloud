@@ -54,7 +54,7 @@ type VM struct {
 	CreatedAt    time.Time     `gorm:"autoCreateTime"`
 	Description  string        `gorm:"type:varchar(255)"`
 	OwnerID      uint          `gorm:"index"`
-	OSID         uint          `gorm:"uniqueIndex;index"` // Add unique constraint here
+	OSID         *uint         `gorm:"foreignKey:OSID;constraint:OnDelete:SET NULL;"`
 	Applications []Application `gorm:"many2many:vm_applications;"`
 
 	// Relationships

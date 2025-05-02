@@ -8,41 +8,46 @@ document.getElementById('to-login').addEventListener('click', function() {
 
 document.getElementById('login-form').addEventListener('submit', function(event) {
   event.preventDefault();
-  const email = document.getElementById('login-email').value;
+  const username = document.getElementById('login-username').value;
   const password = document.getElementById('login-password').value;
-  loginUser(email, password);
+  loginUser(username, password);
 });
 
 document.getElementById('register-form').addEventListener('submit', function(event) {
   event.preventDefault();
-  const username = document.getElementById('register-username').value;
+  const username = document.getElementById('login-username').value;
   const email = document.getElementById('register-email').value;
   const password = document.getElementById('register-password').value;
-  registerUser(username, email, password);
+  loginUser(username, password);
 });
 
-async function loginUser(email, password) {
+async function loginUser(username, password) {
   try {
     const response = await fetch('http://localhost:8088/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     });
 
+    const data = await response.json();
+    localStorage.setItem('authToken', data.token);  // Store token
+    window.location.href = 'dashboard.html';
+    
     if (!response.ok) {
-      throw new Error('Login failed');
+      throw new Error(data.message || 'Login failed');
     }
 
-    const data = await response.json();
     console.log('Login successful:', data);
-    // Redirect or handle successful login
+    window.location.href = 'dashboard.html';
+
   } catch (error) {
     console.error('Error:', error);
-    // Display error message to user
+    alert('Login failed: ' + error.message);
   }
 }
+
 
 async function registerUser(username, email, password) {
   try {

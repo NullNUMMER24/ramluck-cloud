@@ -38,3 +38,36 @@ ADMIN_TOKEN=$(curl -s -X POST http://localhost:8088/api/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "admin"}' | jq -r '.token')
 ```
+#### Create new group
+```bash
+curl -X POST http://localhost:8088/api/groups \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"group_name": "Developers", "role": "developer"}'
+{"group":{"GroupID":1,"GroupName":"Developers","Role":"developer","Users":null},"message":"Group created"
+```
+#### Update group (with gid)
+```bash
+curl -X PUT http://localhost:8088/api/groups/1 \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"group_name": "Senior Developers", "role": "senior-developer"}'
+```
+#### Add users to group
+```bash
+curl -X POST http://localhost:8080/api/groups/1/users \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"user_ids": [1, 2, 3]}'
+```
+#### Remove users from group
+```bash
+curl -X DELETE http://localhost:8080/api/groups/1/users \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"user_ids": [3]}'
+```
+#### Get group detail (users included)
+```bash
+curl -H "Authorization: Bearer $ADMIN_TOKEN" http://localhost:8080/api/groups/1
+```

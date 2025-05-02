@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Groups</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    tr.group-row { cursor: pointer; background-color: #f0f0f0; }
+    tr.user-row { display: none; background-color: #fafafa; }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Group List</h1>
+  <div id="group-table">Loading...</div>
+
+  <script>
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      window.location.href = 'index.html'; // Redirect if not logged in
+    }
+
+    fetch('http://localhost:8088/api/groups', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch groups.");
+      }
+      return response.json();
+    })
+    .then(groups => {
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Group ID</th>
+            <th>Name</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${groups.map((group, i) => `
+            <tr class="group-row" data-index="${i}">
+              <td>${group.GroupID}</td>
+              <td>${group.GroupName}</td>
+              <td>${group.Role}</td>
+            </tr>
+            <tr class="user-row" id="users-${i}">
+              <td colspan="3">
+                <ul>
+                  ${group.Users.map(user => `
+                    <li><strong>${user.Username}</strong> (${user.Email}) - ${user.Role}</li>
+                  `).join('')}
+                </ul>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      document.getElementById('group-table').innerHTML = '';
+      document.getElementById('group-table').appendChild(table);
+
+      // Toggle user list on group row click
+      document.querySelectorAll('.group-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const index = row.dataset.index;
+          const userRow = document.getElementById('users-' + index);
+          userRow.style.display = (userRow.style.display === 'table-row') ? 'none' : 'table-row';
+        });
+      });
+    })
+    .catch(error => {
+      console.error(error);
+      document.getElementById('group-table').innerText = "Error loading groups.";
+    });
+  </script>
+</body>
+</html>

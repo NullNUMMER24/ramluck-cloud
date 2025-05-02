@@ -60,7 +60,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db.AutoMigrate(&tables.User{}, &tables.Group{}, &tables.Hardware{}, &tables.Application{}, &tables.VM{}, &tables.OperatingSystem{})
+	db.AutoMigrate(&tables.User{}, &tables.Group{}, &tables.Hardware{}, &tables.Application{}, &tables.OperatingSystem{}, &tables.VM{})
 	// Create sample entries
 	api_functions.CreateSampleEntries(db)
 
@@ -90,8 +90,23 @@ func main() {
 		api.POST("/login/register", api_functions.RegisterUser(db))
 		api.POST("/users", api_functions.AuthMiddleware(db), api_functions.CreateUser(db))
 		api.DELETE("/users/:id", api_functions.AuthMiddleware(db), api_functions.DeleteUser(db))
-		api.PATCH("/users/:id", api_functions.AuthMiddleware(db), api_functions.UpdateUser(db))
+		api.PUT("/users/:id", api_functions.AuthMiddleware(db), api_functions.UpdateUser(db))
 		api.GET("/users", api_functions.AuthMiddleware(db), api_functions.GetAllUsers(db))
+
+		// Group API
+		api.POST("/groups", api_functions.AuthMiddleware(db), api_functions.CreateGroup(db))
+		api.PUT("/groups/:id", api_functions.AuthMiddleware(db), api_functions.UpdateGroup(db))
+		api.GET("/groups/:id", api_functions.AuthMiddleware(db), api_functions.GetGroupDetails(db))
+		api.POST("/groups/:id/users", api_functions.AuthMiddleware(db), api_functions.AddUsersToGroup(db))
+		api.DELETE("/groups/:id/users", api_functions.AuthMiddleware(db), api_functions.RemoveUsersFromGroup(db))
+		api.GET("/groups", api_functions.AuthMiddleware(db), api_functions.GetAllGroups(db))
+
+		// Operating System API
+		api.POST("/os", api_functions.AuthMiddleware(db), api_functions.CreateOS(db))
+		api.PUT("/os/:id", api_functions.AuthMiddleware(db), api_functions.UpdateOS(db))
+		api.GET("/os/:id", api_functions.AuthMiddleware(db), api_functions.GetOSDetails(db))
+		api.GET("/os", api_functions.AuthMiddleware(db), api_functions.GetAllOS(db))
+		api.DELETE("/os/:id", api_functions.AuthMiddleware(db), api_functions.DeleteOS(db))
 
 	}
 
