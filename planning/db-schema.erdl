@@ -1,0 +1,48 @@
+user
+-
+userID int PK
+Name varchar(100)
+email varchar(100) UNIQUE
+groupID int FK > group.groupID
+
+group
+-
+groupID int PK
+groupName varchar(100) NOT NULL UNIQUE
+access varchar(100)
+
+Hardware
+-
+HardwareID int PK
+ServerName varchar(100) UNIQUE
+Location varchar(100)
+
+VM
+-
+VMID int PK
+HardwareID int FK > Hardware.HardwareID
+GroupID int FK > group.groupID  # Ownership
+created_at timestamp
+description varchar(100)
+IPAddress varchar(15)  # or INET in PostgreSQL
+
+OS
+-
+OSID int PK
+VMID int UNIQUE FK > VM.VMID
+Version varchar(20)  # e.g., "22.04"
+Name varchar(100)  # e.g., "Ubuntu"
+Website varchar(255)
+
+Product
+-
+ProductID int PK
+ProductName varchar(100) NOT NULL
+Vendor varchar(100)
+
+Application
+-
+ApplicationID int PK
+VMID int FK > VM.VMID
+ProductID int FK > Product.ProductID
+Quantity int

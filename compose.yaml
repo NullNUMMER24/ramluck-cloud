@@ -4,8 +4,8 @@ services:
     environment:
       POSTGRES_PASSWORD: 123
       POSTGRES_USER: postgres
-      POSTGRES_DB: LifeSync
-    container_name: lifesync-database
+      POSTGRES_DB: RamluckCloud
+    container_name: ramluckcloud-database
     volumes:
       - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./backend/database/pgdata:/var/lib/postgresql/data
@@ -17,35 +17,35 @@ services:
       timeout: 25s
       retries: 25
     networks:
-      - life-network
+      - ramluckcloud-network
 
-  backend:
-    build: ./backend/GoCode/
-    environment:
-      DB_SERVER: lifesync-database
-      DB_USER: postgres
-      DB_PASSWORD: 123
-      DB_NAME: LifeSync
-      APP_PORT: "8080"
-    container_name: lifesync-backend
-    ports:
-      - "8080:8080"
-    depends_on:
-      database:
-        condition: service_healthy
-    networks:
-      - life-network
+  # backend:
+  #   build: ./backend/GoCode/
+  #   environment:
+  #     DB_SERVER: ramluckcloud-database
+  #     DB_USER: postgres
+  #     DB_PASSWORD: 123
+  #     DB_NAME: RamluckCloud
+  #     APP_PORT: "8080"
+  #   container_name: ramluckcloud-backend
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+  #   networks:
+  #     - ramluckcloud-network
 
   web:
     image: httpd:latest
-    container_name: lifesync-web
+    container_name: ramluckcloud-web
     ports:
       - 8081:80
     volumes:
       - ./website:/usr/local/apache2/htdocs/
     networks:
-      - life-network
+      - ramluckcloud-network
 
 networks:
-  life-network:
+  ramluckcloud-network:
     driver: bridge
