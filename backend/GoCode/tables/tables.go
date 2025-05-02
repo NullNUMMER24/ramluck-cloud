@@ -47,19 +47,17 @@ type Application struct {
 }
 
 type VM struct {
-	VMID        uint      `gorm:"primaryKey"`
-	VMName      string    `gorm:"type:varchar(255)"`
-	VMIP        string    `gorm:"type:varchar(255)"`
-	VMStatus    string    `gorm:"type:varchar(255)"`
-	CreatedAt   time.Time `gorm:"autoCreateTime"`
-	Description string    `gorm:"type:varchar(255)"`
-
-	// Foreign keys
-	OwnerID uint `gorm:"type:uint"`
-	OSID    uint `gorm:"type:uint"`
+	VMID         uint          `gorm:"primaryKey"`
+	VMName       string        `gorm:"type:varchar(255)"`
+	VMIP         string        `gorm:"type:varchar(255)"`
+	VMStatus     string        `gorm:"type:varchar(255)"`
+	CreatedAt    time.Time     `gorm:"autoCreateTime"`
+	Description  string        `gorm:"type:varchar(255)"`
+	OwnerID      uint          `gorm:"index"`
+	OSID         uint          `gorm:"uniqueIndex;index"` // Add unique constraint here
+	Applications []Application `gorm:"many2many:vm_applications;"`
 
 	// Relationships
-	Owner        Group           `gorm:"foreignKey:OwnerID"`
-	OS           OperatingSystem `gorm:"foreignKey:OSID"`
-	Applications []Application   `gorm:"many2many:vm_applications;"`
+	Owner Group           `gorm:"foreignKey:OwnerID"`
+	OS    OperatingSystem `gorm:"foreignKey:OSID"`
 }

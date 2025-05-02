@@ -1,2 +1,2 @@
 -- Create a new database
-CREATE DATABASE mydatabase;
+CREATE DATABASE RamluckCloud;

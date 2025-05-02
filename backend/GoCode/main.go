@@ -73,7 +73,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db.AutoMigrate(&tables.User{}, &tables.Group{}, &tables.OperatingSystem{}, &tables.Hardware{}, &tables.Application{}, &tables.VM{})
+	db.AutoMigrate(&tables.User{}, &tables.Group{}, &tables.Hardware{}, &tables.Application{}, &tables.VM{}, &tables.OperatingSystem{})
 
 	router := gin.Default()
 
@@ -101,59 +101,6 @@ func main() {
 		router.POST("/users", api_functions.AuthMiddleware(db), api_functions.CreateUser(db))
 		router.DELETE("/users/:id", api_functions.AuthMiddleware(db), api_functions.DeleteUser(db))
 		router.GET("/users", api_functions.AuthMiddleware(db), api_functions.GetAllUsers(db))
-
-		// Quotes API
-		// api.GET("/quotes/list_all", api_functions.GetAllQuotes(db))
-		// api.GET("/quotes/list_all", api_functions.GetAllQuotes(db))
-		// api.GET("/quotes/daily_quote", api_functions.GetDailyQuote(db))
-		// api.POST("/quotes", api_functions.AddNewQuote(db))
-
-		// // Users API
-		// api.POST("/user", api_functions.CreateUser(db))
-		// api.GET("/user", api_functions.GetAllUsers(db))
-
-		// // login
-		// api.POST("/login", api_functions.UserLogin(db))
-
-		// // Trainings
-		// api.GET("/exercise", api_functions.AuthMiddleware(db), api_functions.GetAllExercises(db))
-
-		// api.POST("/exercise/cardio", api_functions.AuthMiddleware(db), api_functions.CreateCardioExercise(db))
-		// api.GET("/exercise/cardio", api_functions.AuthMiddleware(db), api_functions.GetCardioEntries(db))
-
-		// api.POST("/exercise/weight", api_functions.AuthMiddleware(db), api_functions.CreateWeightExercise(db))
-		// api.GET("/exercise/weight", api_functions.AuthMiddleware(db), api_functions.GetWeightEntries(db))
-
-		// // ToDo
-		// api.POST("/todo", api_functions.AuthMiddleware(db), api_functions.CreateTask(db))
-		// api.DELETE("/todo/:id", api_functions.AuthMiddleware(db), api_functions.DeleteTask(db))
-		// api.PUT("/todo/:id", api_functions.AuthMiddleware(db), api_functions.EditTask(db))
-		// api.PATCH("/todo/:id", api_functions.AuthMiddleware(db), api_functions.UpdateTaskStatus(db)) // Include the id in the url
-		// api.GET("/todo/grouped", api_functions.AuthMiddleware(db), api_functions.GetTasksGroupedByStatus(db))
-		// // api.POST("/todo", api_functions.CreateTask(db))
-		// // api.DELETE("/todo/:id", api_functions.DeleteTask(db))
-		// // api.PUT("/todo/:id", api_functions.EditTask(db))
-		// // api.PATCH("/todo/:id", api_functions.UpdateTaskStatus(db)) // Include the id in the url
-		// // api.GET("/todo/grouped", api_functions.GetTasksGroupedByStatus(db))
-
-		// // Meals
-		// api.POST("/meal", api_functions.AuthMiddleware(db), api_functions.AddMeal(db))
-		// api.GET("/meal", api_functions.AuthMiddleware(db), api_functions.GetMeals(db))
-
-		// // Recipe
-		// api.POST("/recipe", api_functions.CreateNewRecipe(db))
-		// api.GET("/recipe", api_functions.GetAllRecipes(db))
-		// // router.GET("/recipe-ideas", api_functions.GetRecipeIdea(db))
-
-		// Example
-		// api.GET("/tirebrands/list", api_functions.GetTireBrands(db))
-		// api.POST("/tirebrands", api_functions.CreateTireBrand(db))
-		// api.GET("/tirebrands/:id", api_functions.GetTireBrandByID(db))
-		// api.PUT("/tirebrands/:id", api_functions.UpdateTireBrand(db))
-		// api.DELETE("/tirebrands/:id", api_functions.DeleteTireBrand(db))
-
-		// App API
-		// api.GET("/app/list", GetVehiclesWithDetails(db))
 
 	}
 
