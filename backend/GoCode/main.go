@@ -97,10 +97,12 @@ func main() {
 	api := router.Group("/api")
 	{
 		// User API
-		router.POST("/login", api_functions.UserLogin(db))
-		router.POST("/users", api_functions.AuthMiddleware(db), api_functions.CreateUser(db))
-		router.DELETE("/users/:id", api_functions.AuthMiddleware(db), api_functions.DeleteUser(db))
-		router.GET("/users", api_functions.AuthMiddleware(db), api_functions.GetAllUsers(db))
+		api.POST("/login", api_functions.UserLogin(db))
+		api.POST("/login/register", api_functions.RegisterUser(db))
+		api.POST("/users", api_functions.AuthMiddleware(db), api_functions.CreateUser(db))
+		api.DELETE("/users/:id", api_functions.AuthMiddleware(db), api_functions.DeleteUser(db))
+		api.PATCH("/users/:id", api_functions.AuthMiddleware(db), api_functions.UpdateUser(db))
+		api.GET("/users", api_functions.AuthMiddleware(db), api_functions.GetAllUsers(db))
 
 	}
 

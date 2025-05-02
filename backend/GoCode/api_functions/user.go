@@ -286,3 +286,87 @@ func CreateAdminUser(db *gorm.DB) {
 	// Use `FirstOrCreate` to avoid duplicate entries
 	db.FirstOrCreate(&user, tables.User{Username: "admin"})
 }
+
+// RegisterUser handler
+func RegisterUser(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req CreateUserRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Check email uniqueness
+		var existingUser tables.User
+		if err := db.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
+			return
+		}
+
+		hashedPassword, err := HashPassword(req.Password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
+			return
+		}
+
+		newUser := tables.User{
+			Username: req.Username,
+			Email:    req.Email,
+			Password: hashedPassword,
+			Role:     string(RoleUser), // Default role
+		}
+
+		if err := db.Create(&newUser).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
+			return
+		}
+
+		c.JSON(http.StatusCreated, gin.H{"message": "User created successfully", "user": newUser})
+	}
+}
+
+// UpdateUser handler
+func UpdateUser(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authUser := c.MustGet("authUser").(AuthUser)
+		userID := c.Param("id")
+
+		var targetUser tables.User
+		if err := db.First(&targetUser, userID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		// Check if admin or same user
+		if authUser.Role != RoleAdmin && authUser.UserID != targetUser.UserID {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized"})
+			return
+		}
+
+		var req CreateUserRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Update user attributes
+		targetUser.Username = req.Username
+		targetUser.Email = req.Email
+
+		if req.Password != "" { // Only update password if provided
+			hashedPassword, err := HashPassword(req.Password)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
+				return
+			}
+			targetUser.Password = hashedPassword
+		}
+
+		if err := db.Save(&targetUser).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update user"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "User updated successfully", "user": targetUser})
+	}
+}

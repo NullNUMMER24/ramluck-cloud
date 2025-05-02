@@ -15,3 +15,7 @@ docker exec -it ramluckcloud-database psql -U postgres -d RamluckCloud
 ```sql
 RamluckCloud=# \dt
 ```
+#### Drop the Database
+```sql
+DROP TABLE IF EXISTS user_groups, users, groups, operating_systems, applications, vms, vm_applications CASCADE;
+```
