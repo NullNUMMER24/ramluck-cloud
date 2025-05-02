@@ -108,6 +108,13 @@ func main() {
 		api.GET("/os", api_functions.AuthMiddleware(db), api_functions.GetAllOS(db))
 		api.DELETE("/os/:id", api_functions.AuthMiddleware(db), api_functions.DeleteOS(db))
 
+		// VM API
+		api.POST("/vms", api_functions.AuthMiddleware(db), api_functions.CreateVM(db))
+		api.PUT("/vms/:id", api_functions.AuthMiddleware(db), api_functions.UpdateVM(db))
+		api.GET("/vms/:id", api_functions.AuthMiddleware(db), api_functions.GetVMDetails(db))
+		api.GET("/vms", api_functions.AuthMiddleware(db), api_functions.GetAllVMs(db))
+		api.DELETE("/vms/:id", api_functions.AuthMiddleware(db), api_functions.DeleteVM(db))
+		api.POST("/vms/:id/applications", api_functions.AuthMiddleware(db), api_functions.ManageVMApplications(db))
 	}
 
 	// Server Swagger Doc
