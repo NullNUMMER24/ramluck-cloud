@@ -2,7 +2,6 @@ package api_functions
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"ramluck-cloud/tables"
@@ -265,26 +264,6 @@ func UserLogin(db *gorm.DB) gin.HandlerFunc {
 			Token: token,
 		})
 	}
-}
-
-// Updated the Admin user
-func CreateAdminUser(db *gorm.DB) {
-	// Hash the password
-	password := "admin"
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Fatalf("failed to hash password: %v", err)
-	}
-
-	user := tables.User{
-		Username: "admin",
-		Password: string(hashedPassword),
-		Email:    "admin@example.com",
-		Role:     "admin",
-	}
-
-	// Use `FirstOrCreate` to avoid duplicate entries
-	db.FirstOrCreate(&user, tables.User{Username: "admin"})
 }
 
 // RegisterUser handler

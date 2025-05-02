@@ -26,6 +26,9 @@ import (
 	"ramluck-cloud/tables"
 	"time"
 
+	"ramluck-cloud/api_functions"
+	"ramluck-cloud/config"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -34,26 +37,10 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-
-	"ramluck-cloud/api_functions"
-)
-
-var (
-	// Get the variables from compose
-	// DB_PASSWORD = os.Getenv("DB_PASSWORD")
-	// DB_SERVER   = os.Getenv("DB_SERVER")
-	// DB_NAME     = os.Getenv("DB_NAME")
-	// DB_USER     = os.Getenv("DB_USER")
-	// APP_PORT    = os.Getenv("APP_PORT")
-	DB_PASSWORD = "123"
-	DB_SERVER   = "localhost"
-	DB_NAME     = "RamluckCloud"
-	DB_USER     = "postgres"
-	APP_PORT    = "8088"
 )
 
 func main() {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable", DB_SERVER, DB_USER, DB_PASSWORD, DB_NAME)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable", config.DB_SERVER, config.DB_USER, config.DB_PASSWORD, config.DB_NAME)
 	var db *gorm.DB
 	var err error
 	// Retry connecting to the database for 30 seconds
@@ -74,6 +61,8 @@ func main() {
 	}
 
 	db.AutoMigrate(&tables.User{}, &tables.Group{}, &tables.Hardware{}, &tables.Application{}, &tables.VM{}, &tables.OperatingSystem{})
+	// Create sample entries
+	api_functions.CreateSampleEntries(db)
 
 	router := gin.Default()
 
@@ -110,7 +99,7 @@ func main() {
 	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Start the server on port 8080 (or any other port you prefer)
-	if err := router.Run(fmt.Sprintf(":%s", APP_PORT)); err != nil {
+	if err := router.Run(fmt.Sprintf(":%s", config.APP_PORT)); err != nil {
 		log.Fatal(err)
 	}
 

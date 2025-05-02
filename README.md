@@ -19,3 +19,15 @@ RamluckCloud=# \dt
 ```sql
 DROP TABLE IF EXISTS user_groups, users, groups, operating_systems, applications, vms, vm_applications CASCADE;
 ```
+
+### API
+#### Create new user
+```bash
+curl -X POST http://localhost:8088/api/login/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "newuser",
+    "password": "securepassword123",
+    "email": "newuser@example.cofm"
+  }'
+```

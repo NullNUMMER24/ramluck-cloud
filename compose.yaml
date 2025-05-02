@@ -8,7 +8,8 @@ services:
     container_name: ramluckcloud-database
     volumes:
       - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./backend/database/pgdata:/var/lib/postgresql/data
+      #- ./backend/database/pgdata:/var/lib/postgresql/data
+      - /tmp/pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -27,6 +28,7 @@ services:
   #     DB_PASSWORD: 123
   #     DB_NAME: RamluckCloud
   #     APP_PORT: "8080"
+  #     ADMIN_PASSWORD: "admin"
   #   container_name: ramluckcloud-backend
   #   ports:
   #     - "8080:8080"
