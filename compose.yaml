@@ -1,0 +1,53 @@
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: postgres
+      POSTGRES_DB: RamluckCloud
+    container_name: ramluckcloud-database
+    volumes:
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      #- ./backend/database/pgdata:/var/lib/postgresql/data
+      - /tmp/pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 25s
+      retries: 25
+    networks:
+      - ramluckcloud-network
+
+  # backend:
+  #   build: ./backend/GoCode/
+  #   environment:
+  #     DB_SERVER: ramluckcloud-database
+  #     DB_USER: postgres
+  #     DB_PASSWORD: 123
+  #     DB_NAME: RamluckCloud
+  #     APP_PORT: "8080"
+  #     ADMIN_PASSWORD: "admin"
+  #   container_name: ramluckcloud-backend
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+  #   networks:
+  #     - ramluckcloud-network
+
+  web:
+    image: httpd:latest
+    container_name: ramluckcloud-web
+    ports:
+      - 8081:80
+    volumes:
+      - ./website:/usr/local/apache2/htdocs/
+    networks:
+      - ramluckcloud-network
+
+networks:
+  ramluckcloud-network:
+    driver: bridge

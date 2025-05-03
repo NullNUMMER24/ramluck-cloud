@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Users</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>User List</h1>
+  <div id="user-table">Loading...</div>
+
+  <script>
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      window.location.href = 'index.html'; // Redirect if not logged in
+    }
+
+    fetch('http://localhost:8088/api/users', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch users.");
+      }
+      return response.json();
+    })
+    .then(users => {
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>UserID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.map(user => `
+            <tr>
+              <td>${user.UserID}</td>
+              <td>${user.Username}</td>
+              <td>${user.Email}</td>
+              <td>${user.Role}</td>
+              <td>${new Date(user.CreatedAt).toLocaleString()}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      document.getElementById('user-table').innerHTML = '';
+      document.getElementById('user-table').appendChild(table);
+    })
+    .catch(error => {
+      console.error(error);
+      document.getElementById('user-table').innerText = "Error loading users.";
+    });
+  </script>
+</body>
+</html>
