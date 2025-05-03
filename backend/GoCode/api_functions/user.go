@@ -44,7 +44,18 @@ type AuthUser struct {
 	Role     Role
 }
 
-// Updated CreateUser with admin check
+// @Summary Create a new user
+// @Description Create a new user (Admin only)
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param body body CreateUserRequest true "User details"
+// @Success 201 {object} map[string]interface{} "User created successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 409 {object} map[string]string "Email already exists"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /users [post]
 func CreateUser(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get auth user from context
@@ -89,7 +100,15 @@ func CreateUser(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// New DeleteUser handler
+// @Summary Delete a user
+// @Description Delete a user by ID (Admin or self only)
+// @Tags Users
+// @Param id path int true "User ID"
+// @Success 200 {object} map[string]string "User deleted successfully"
+// @Failure 403 {object} map[string]string "Unauthorized"
+// @Failure 404 {object} map[string]string "User not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /users/{id} [delete]
 func DeleteUser(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -180,7 +199,14 @@ func GenerateToken(user tables.User) (string, error) {
 	return token.SignedString([]byte(config.JWT_SECRET))
 }
 
-// Updated GetAllUsers with admin check
+// @Summary Get all users
+// @Description Retrieve a list of all users (Admin only)
+// @Tags Users
+// @Produce json
+// @Success 200 {array} tables.User "List of users"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /users [get]
 func GetAllUsers(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -222,7 +248,17 @@ func isValidCredentials(db *gorm.DB, username, password string) bool {
 	return true // Valid credentials
 }
 
-// UserLogin handles user authentication
+// @Summary Authenticate user
+// @Description Authenticate user and return JWT token
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param body body LoginRequest true "Login details"
+// @Success 200 {object} LoginResponse "JWT token"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 401 {object} map[string]string "Invalid credentials"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /login [post]
 func UserLogin(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req LoginRequest
@@ -257,7 +293,17 @@ func UserLogin(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// RegisterUser handler
+// @Summary Register a new user
+// @Description Register a new user
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param body body CreateUserRequest true "User details"
+// @Success 201 {object} map[string]interface{} "User registered successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 409 {object} map[string]string "Email already exists"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /login/register [post]
 func RegisterUser(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req CreateUserRequest
@@ -295,7 +341,19 @@ func RegisterUser(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// UpdateUser handler
+// @Summary Update user details
+// @Description Update user details by ID (Admin or self only)
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Param body body CreateUserRequest true "Updated user details"
+// @Success 200 {object} map[string]interface{} "User updated successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Unauthorized"
+// @Failure 404 {object} map[string]string "User not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /users/{id} [put]
 func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)

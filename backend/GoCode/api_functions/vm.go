@@ -28,7 +28,23 @@ type UpdateVMRequest struct {
 	Description string `json:"description"`
 }
 
-// CreateVM creates a new virtual machine (Admin only)
+// DTO for managing VM applications
+type ManageVMApplicationsRequest struct {
+	Add    []uint `json:"add" example:"[1,2,3]" description:"IDs of applications to add"`
+	Remove []uint `json:"remove" example:"[4,5]" description:"IDs of applications to remove"`
+}
+
+// @Summary Create a new virtual machine
+// @Description Create a new VM (Admin only)
+// @Tags Virtual Machines
+// @Accept json
+// @Produce json
+// @Param body body CreateVMRequest true "VM details"
+// @Success 201 {object} map[string]interface{} "VM created successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /vms [post]
 func CreateVM(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -81,7 +97,13 @@ func CreateVM(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// GetAllVMs retrieves all virtual machines
+// @Summary Get all virtual machines
+// @Description Retrieve a list of all VMs
+// @Tags Virtual Machines
+// @Produce json
+// @Success 200 {array} tables.VM "List of VMs"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /vms [get]
 func GetAllVMs(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var vms []tables.VM
@@ -96,7 +118,15 @@ func GetAllVMs(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// GetVMDetails retrieves specific VM information
+// @Summary Get virtual machine details
+// @Description Retrieve details of a VM by ID
+// @Tags Virtual Machines
+// @Produce json
+// @Param id path int true "VM ID"
+// @Success 200 {object} tables.VM "VM details"
+// @Failure 404 {object} map[string]string "VM not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /vms/{id} [get]
 func GetVMDetails(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		vmID := c.Param("id")
@@ -114,7 +144,19 @@ func GetVMDetails(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// UpdateVM updates VM details (Admin only)
+// @Summary Update a virtual machine
+// @Description Update VM details by ID (Admin only)
+// @Tags Virtual Machines
+// @Accept json
+// @Produce json
+// @Param id path int true "VM ID"
+// @Param body body UpdateVMRequest true "Updated VM details"
+// @Success 200 {object} map[string]interface{} "VM updated successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 404 {object} map[string]string "VM not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /vms/{id} [put]
 func UpdateVM(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -159,7 +201,15 @@ func UpdateVM(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// DeleteVM removes a VM (Admin only)
+// @Summary Delete a virtual machine
+// @Description Delete a VM by ID (Admin only)
+// @Tags Virtual Machines
+// @Param id path int true "VM ID"
+// @Success 200 {object} map[string]string "VM deleted successfully"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 404 {object} map[string]string "VM not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /vms/{id} [delete]
 func DeleteVM(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -185,7 +235,19 @@ func DeleteVM(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// ManageVMApplications updates applications for a VM (Admin only)
+// @Summary Manage VM applications
+// @Description Add or remove applications for a VM (Admin only)
+// @Tags Virtual Machines
+// @Accept json
+// @Produce json
+// @Param id path int true "VM ID"
+// @Param body body ManageVMApplicationsRequest true "Applications to add or remove"
+// @Success 200 {object} map[string]string "Applications updated successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 404 {object} map[string]string "VM not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /vms/{id}/applications [post]
 func ManageVMApplications(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)

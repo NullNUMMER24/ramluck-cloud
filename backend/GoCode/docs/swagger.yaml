@@ -1,0 +1,1365 @@
+basePath: /api/
+definitions:
+  api_functions.CreateAppRequest:
+    properties:
+      application_name:
+        type: string
+      application_type:
+        type: string
+      link_to_website:
+        type: string
+    required:
+    - application_name
+    - application_type
+    type: object
+  api_functions.CreateGroupRequest:
+    properties:
+      group_name:
+        type: string
+      role:
+        type: string
+    required:
+    - group_name
+    - role
+    type: object
+  api_functions.CreateOSRequest:
+    properties:
+      link_to_os_website:
+        type: string
+      os_name:
+        type: string
+      os_version:
+        type: string
+    required:
+    - link_to_os_website
+    - os_name
+    - os_version
+    type: object
+  api_functions.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  api_functions.CreateVMRequest:
+    properties:
+      application_ids:
+        items:
+          type: integer
+        type: array
+      description:
+        type: string
+      os_id:
+        type: integer
+      owner_id:
+        type: integer
+      vm_ip:
+        type: string
+      vm_name:
+        type: string
+      vm_status:
+        enum:
+        - running
+        - stopped
+        - maintenance
+        type: string
+    required:
+    - os_id
+    - owner_id
+    - vm_ip
+    - vm_name
+    - vm_status
+    type: object
+  api_functions.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  api_functions.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  api_functions.ManageVMApplicationsRequest:
+    type: object
+  api_functions.ModifyGroupUsersRequest:
+    properties:
+      user_ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - user_ids
+    type: object
+  api_functions.MoveAppRequest:
+    properties:
+      target_vm_id:
+        type: integer
+    required:
+    - target_vm_id
+    type: object
+  api_functions.UpdateAppRequest:
+    properties:
+      application_name:
+        type: string
+      application_type:
+        type: string
+      link_to_website:
+        type: string
+    type: object
+  api_functions.UpdateGroupRequest:
+    properties:
+      group_name:
+        type: string
+      role:
+        type: string
+    type: object
+  api_functions.UpdateOSRequest:
+    properties:
+      link_to_os_website:
+        type: string
+      os_name:
+        type: string
+      os_version:
+        type: string
+    type: object
+  api_functions.UpdateVMRequest:
+    properties:
+      description:
+        type: string
+      vm_ip:
+        type: string
+      vm_name:
+        type: string
+      vm_status:
+        enum:
+        - running
+        - stopped
+        - maintenance
+        type: string
+    type: object
+  tables.Application:
+    properties:
+      applicationID:
+        type: integer
+      applicationName:
+        type: string
+      applicationType:
+        type: string
+      createdAt:
+        type: string
+      linkToWebsite:
+        type: string
+      updatedAt:
+        type: string
+      vms:
+        items:
+          $ref: '#/definitions/tables.VM'
+        type: array
+    type: object
+  tables.Group:
+    properties:
+      groupID:
+        type: integer
+      groupName:
+        type: string
+      role:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/tables.User'
+        type: array
+    type: object
+  tables.OperatingSystem:
+    properties:
+      createdAt:
+        type: string
+      linkToOSWebsite:
+        type: string
+      osid:
+        type: integer
+      osname:
+        type: string
+      osversion:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  tables.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      groups:
+        items:
+          $ref: '#/definitions/tables.Group'
+        type: array
+      role:
+        type: string
+      userID:
+        type: integer
+      username:
+        type: string
+    type: object
+  tables.VM:
+    properties:
+      applications:
+        items:
+          $ref: '#/definitions/tables.Application'
+        type: array
+      createdAt:
+        type: string
+      description:
+        type: string
+      osid:
+        type: integer
+      owner:
+        allOf:
+        - $ref: '#/definitions/tables.Group'
+        description: Relationships
+      ownerID:
+        type: integer
+      vmid:
+        type: integer
+      vmip:
+        type: string
+      vmname:
+        type: string
+      vmstatus:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8088
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: RamluckCloud API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: RamluckCloud API
+  version: "0.1"
+paths:
+  /applications:
+    post:
+      consumes:
+      - application/json
+      description: Create a new application (Admin only)
+      parameters:
+      - description: Application details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.CreateAppRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Application created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new application
+      tags:
+      - Applications
+  /applications/{id}:
+    delete:
+      description: Delete an application by ID (Admin only)
+      parameters:
+      - description: Application ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Application deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Application not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete an application
+      tags:
+      - Applications
+    put:
+      consumes:
+      - application/json
+      description: Update application details by ID (Admin only)
+      parameters:
+      - description: Application ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated application details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.UpdateAppRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Application updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Application not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update an application
+      tags:
+      - Applications
+  /applications/{id}/move:
+    post:
+      consumes:
+      - application/json
+      description: Assign an application to a different VM (Admin only)
+      parameters:
+      - description: Application ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Target VM ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.MoveAppRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Application moved successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Application or target VM not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Move an application to a different VM
+      tags:
+      - Applications
+  /groups:
+    get:
+      description: Retrieve a list of all groups (Admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of groups
+          schema:
+            items:
+              $ref: '#/definitions/tables.Group'
+            type: array
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all groups
+      tags:
+      - Groups
+    post:
+      consumes:
+      - application/json
+      description: Create a new group (Admin only)
+      parameters:
+      - description: Group details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.CreateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Group created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new group
+      tags:
+      - Groups
+  /groups/{id}:
+    get:
+      description: Retrieve details of a group by ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Group details
+          schema:
+            $ref: '#/definitions/tables.Group'
+        "404":
+          description: Group not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get group details
+      tags:
+      - Groups
+    put:
+      consumes:
+      - application/json
+      description: Update group details by ID (Admin only)
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated group details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.UpdateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Group updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Group not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update group details
+      tags:
+      - Groups
+  /groups/{id}/users:
+    delete:
+      consumes:
+      - application/json
+      description: Remove users from a group by ID (Admin only)
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User IDs to remove
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.ModifyGroupUsersRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users removed from group
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Group not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Remove users from a group
+      tags:
+      - Groups
+    post:
+      consumes:
+      - application/json
+      description: Add users to a group by ID (Admin only)
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User IDs to add
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.ModifyGroupUsersRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users added to group
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Group not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add users to a group
+      tags:
+      - Groups
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: Login details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JWT token
+          schema:
+            $ref: '#/definitions/api_functions.LoginResponse'
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid credentials
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Authenticate user
+      tags:
+      - Users
+  /login/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Email already exists
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Users
+  /os:
+    get:
+      description: Retrieve a list of all OS entries
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of operating systems
+          schema:
+            items:
+              $ref: '#/definitions/tables.OperatingSystem'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all operating systems
+      tags:
+      - Operating Systems
+    post:
+      consumes:
+      - application/json
+      description: Create a new OS entry (Admin only)
+      parameters:
+      - description: OS details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.CreateOSRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OS created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: OS version already exists
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new operating system
+      tags:
+      - Operating Systems
+  /os/{id}:
+    delete:
+      description: Delete an OS entry by ID (Admin only)
+      parameters:
+      - description: OS ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OS deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: OS not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: OS in use by VMs
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete an operating system
+      tags:
+      - Operating Systems
+    get:
+      description: Retrieve details of an OS by ID
+      parameters:
+      - description: OS ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OS details
+          schema:
+            $ref: '#/definitions/tables.OperatingSystem'
+        "404":
+          description: OS not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get operating system details
+      tags:
+      - Operating Systems
+    put:
+      consumes:
+      - application/json
+      description: Update OS details by ID (Admin only)
+      parameters:
+      - description: OS ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated OS details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.UpdateOSRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OS updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: OS not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update an operating system
+      tags:
+      - Operating Systems
+  /users:
+    get:
+      description: Retrieve a list of all users (Admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/tables.User'
+            type: array
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user (Admin only)
+      parameters:
+      - description: User details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Email already exists
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      description: Delete a user by ID (Admin or self only)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update user details by ID (Admin or self only)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated user details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update user details
+      tags:
+      - Users
+  /vms:
+    get:
+      description: Retrieve a list of all VMs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of VMs
+          schema:
+            items:
+              $ref: '#/definitions/tables.VM'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all virtual machines
+      tags:
+      - Virtual Machines
+    post:
+      consumes:
+      - application/json
+      description: Create a new VM (Admin only)
+      parameters:
+      - description: VM details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.CreateVMRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: VM created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new virtual machine
+      tags:
+      - Virtual Machines
+  /vms/{id}:
+    delete:
+      description: Delete a VM by ID (Admin only)
+      parameters:
+      - description: VM ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: VM deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: VM not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a virtual machine
+      tags:
+      - Virtual Machines
+    get:
+      description: Retrieve details of a VM by ID
+      parameters:
+      - description: VM ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: VM details
+          schema:
+            $ref: '#/definitions/tables.VM'
+        "404":
+          description: VM not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get virtual machine details
+      tags:
+      - Virtual Machines
+    put:
+      consumes:
+      - application/json
+      description: Update VM details by ID (Admin only)
+      parameters:
+      - description: VM ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated VM details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.UpdateVMRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: VM updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: VM not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a virtual machine
+      tags:
+      - Virtual Machines
+  /vms/{id}/applications:
+    post:
+      consumes:
+      - application/json
+      description: Add or remove applications for a VM (Admin only)
+      parameters:
+      - description: VM ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Applications to add or remove
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api_functions.ManageVMApplicationsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Applications updated successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Admin privileges required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: VM not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Manage VM applications
+      tags:
+      - Virtual Machines
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

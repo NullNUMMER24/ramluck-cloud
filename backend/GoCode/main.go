@@ -1,6 +1,6 @@
 // @title           RamluckCloud API
 // @version         0.1
-// @description     My example API
+// @description     RamluckCloud API
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   API Support
@@ -23,17 +23,18 @@ package main
 import (
 	"fmt"
 	"log"
+	"ramluck-cloud/docs"
 	"ramluck-cloud/tables"
 	"time"
 
 	"ramluck-cloud/api_functions"
 	"ramluck-cloud/config"
+	_ "ramluck-cloud/docs" // Correct import for your Swagger docs
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/swag/example/basic/docs"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -115,10 +116,16 @@ func main() {
 		api.GET("/vms", api_functions.AuthMiddleware(db), api_functions.GetAllVMs(db))
 		api.DELETE("/vms/:id", api_functions.AuthMiddleware(db), api_functions.DeleteVM(db))
 		api.POST("/vms/:id/applications", api_functions.AuthMiddleware(db), api_functions.ManageVMApplications(db))
+
+		// Applications API
+		api.POST("/applications", api_functions.AuthMiddleware(db), api_functions.CreateApplication(db))
+		api.PUT("/applications/:id", api_functions.AuthMiddleware(db), api_functions.UpdateApplication(db))
+		api.DELETE("/applications/:id", api_functions.AuthMiddleware(db), api_functions.DeleteApplication(db))
+		api.POST("/applications/:id/move", api_functions.AuthMiddleware(db), api_functions.MoveApplication(db))
 	}
 
 	// Server Swagger Doc
-	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Start the server on port 8080 (or any other port you prefer)
 	if err := router.Run(fmt.Sprintf(":%s", config.APP_PORT)); err != nil {

@@ -23,7 +23,18 @@ type UpdateOSRequest struct {
 	LinkToOSWebsite string `json:"link_to_os_website" binding:"omitempty,url"`
 }
 
-// CreateOS creates a new OS entry (Admin only)
+// @Summary Create a new operating system
+// @Description Create a new OS entry (Admin only)
+// @Tags Operating Systems
+// @Accept json
+// @Produce json
+// @Param body body CreateOSRequest true "OS details"
+// @Success 201 {object} map[string]interface{} "OS created successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 409 {object} map[string]string "OS version already exists"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /os [post]
 func CreateOS(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -60,7 +71,19 @@ func CreateOS(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// UpdateOS updates an OS entry (Admin only)
+// @Summary Update an operating system
+// @Description Update OS details by ID (Admin only)
+// @Tags Operating Systems
+// @Accept json
+// @Produce json
+// @Param id path int true "OS ID"
+// @Param body body UpdateOSRequest true "Updated OS details"
+// @Success 200 {object} map[string]interface{} "OS updated successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 404 {object} map[string]string "OS not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /os/{id} [put]
 func UpdateOS(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -102,7 +125,13 @@ func UpdateOS(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// GetAllOS retrieves all OS entries
+// @Summary Get all operating systems
+// @Description Retrieve a list of all OS entries
+// @Tags Operating Systems
+// @Produce json
+// @Success 200 {array} tables.OperatingSystem "List of operating systems"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /os [get]
 func GetAllOS(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var osList []tables.OperatingSystem
@@ -114,7 +143,15 @@ func GetAllOS(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// GetOSDetails retrieves specific OS information
+// @Summary Get operating system details
+// @Description Retrieve details of an OS by ID
+// @Tags Operating Systems
+// @Produce json
+// @Param id path int true "OS ID"
+// @Success 200 {object} tables.OperatingSystem "OS details"
+// @Failure 404 {object} map[string]string "OS not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /os/{id} [get]
 func GetOSDetails(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		osID := c.Param("id")
@@ -129,7 +166,16 @@ func GetOSDetails(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// DeleteOS removes an OS entry (Admin only)
+// @Summary Delete an operating system
+// @Description Delete an OS entry by ID (Admin only)
+// @Tags Operating Systems
+// @Param id path int true "OS ID"
+// @Success 200 {object} map[string]string "OS deleted successfully"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 404 {object} map[string]string "OS not found"
+// @Failure 409 {object} map[string]string "OS in use by VMs"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /os/{id} [delete]
 func DeleteOS(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)

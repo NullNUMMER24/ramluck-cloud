@@ -25,7 +25,17 @@ type ModifyGroupUsersRequest struct {
 	UserIDs []uint `json:"user_ids" binding:"required"`
 }
 
-// CreateGroup creates a new group (Admin only)
+// @Summary Create a new group
+// @Description Create a new group (Admin only)
+// @Tags Groups
+// @Accept json
+// @Produce json
+// @Param body body CreateGroupRequest true "Group details"
+// @Success 201 {object} map[string]interface{} "Group created successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /groups [post]
 func CreateGroup(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -54,7 +64,19 @@ func CreateGroup(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// UpdateGroup updates group details (Admin only)
+// @Summary Update group details
+// @Description Update group details by ID (Admin only)
+// @Tags Groups
+// @Accept json
+// @Produce json
+// @Param id path int true "Group ID"
+// @Param body body UpdateGroupRequest true "Updated group details"
+// @Success 200 {object} map[string]interface{} "Group updated successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 404 {object} map[string]string "Group not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /groups/{id} [put]
 func UpdateGroup(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -93,7 +115,19 @@ func UpdateGroup(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// AddUsersToGroup adds users to a group (Admin only)
+// @Summary Add users to a group
+// @Description Add users to a group by ID (Admin only)
+// @Tags Groups
+// @Accept json
+// @Produce json
+// @Param id path int true "Group ID"
+// @Param body body ModifyGroupUsersRequest true "User IDs to add"
+// @Success 200 {object} map[string]string "Users added to group"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 404 {object} map[string]string "Group not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /groups/{id}/users [post]
 func AddUsersToGroup(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -131,7 +165,19 @@ func AddUsersToGroup(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// RemoveUsersFromGroup removes users from a group (Admin only)
+// @Summary Remove users from a group
+// @Description Remove users from a group by ID (Admin only)
+// @Tags Groups
+// @Accept json
+// @Produce json
+// @Param id path int true "Group ID"
+// @Param body body ModifyGroupUsersRequest true "User IDs to remove"
+// @Success 200 {object} map[string]string "Users removed from group"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 404 {object} map[string]string "Group not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /groups/{id}/users [delete]
 func RemoveUsersFromGroup(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
@@ -169,7 +215,15 @@ func RemoveUsersFromGroup(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// GetGroupDetails retrieves group information
+// @Summary Get group details
+// @Description Retrieve details of a group by ID
+// @Tags Groups
+// @Produce json
+// @Param id path int true "Group ID"
+// @Success 200 {object} tables.Group "Group details"
+// @Failure 404 {object} map[string]string "Group not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /groups/{id} [get]
 func GetGroupDetails(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		groupID := c.Param("id")
@@ -184,7 +238,14 @@ func GetGroupDetails(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// GetAllGroups retrieves all groups (Admin only)
+// @Summary Get all groups
+// @Description Retrieve a list of all groups (Admin only)
+// @Tags Groups
+// @Produce json
+// @Success 200 {array} tables.Group "List of groups"
+// @Failure 403 {object} map[string]string "Admin privileges required"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /groups [get]
 func GetAllGroups(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authUser := c.MustGet("authUser").(AuthUser)
