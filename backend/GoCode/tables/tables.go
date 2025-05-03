@@ -58,6 +58,6 @@ type VM struct {
 	Applications []Application `gorm:"many2many:vm_applications;"`
 
 	// Relationships
-	Owner Group `gorm:"foreignKey:OwnerID"`
-	//OS    OperatingSystem `gorm:"foreignKey:OSID"`
+	Owner Group           `gorm:"foreignKey:OwnerID"`
+	OS    OperatingSystem `gorm:"foreignKey:OSID"`
 }

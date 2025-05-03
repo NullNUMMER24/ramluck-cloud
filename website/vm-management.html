@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VM Management</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    tr.vm-row { cursor: pointer; background-color: #f0f0f0; }
+    tr.details-row { display: none; background-color: #fafafa; }
+    form { margin-bottom: 20px; }
+    input[type="text"], input[type="number"] { padding: 10px; margin: 5px 0; width: calc(100% - 22px); }
+    button { padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background-color: #218838; }
+  </style>
+</head>
+<body>
+  <h1>Virtual Machine Management</h1>
+  
+  <form id="vmForm">
+    <input type="hidden" id="vmId">
+    <input type="text" id="vmName" placeholder="VM Name" required>
+    <input type="text" id="vmIP" placeholder="VM IP Address" required>
+    <input type="text" id="vmStatus" placeholder="VM Status" required>
+    <input type="number" id="ownerId" placeholder="Owner ID" required>
+    <input type="number" id="osId" placeholder="OS ID" required>
+    <input type="text" id="applicationIds" placeholder="Application IDs (comma-separated)" required>
+    <button type="submit">Add/Update VM</button>
+  </form>
+
+  <div id="vm-table">Loading...</div>
+
+  <script>
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      window.location.href = 'index.html'; // Redirect if not logged in
+    }
+
+    // Fetch all VMs from the API
+    function fetchVMs() {
+      fetch('http://localhost:8088/api/vms', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch VMs.");
+        }
+        return response.json();
+      })
+      .then(vms => {
+        renderVMs(vms);
+      })
+      .catch(error => {
+        console.error(error);
+        document.getElementById('vm-table').innerText = "Error loading VMs.";
+      });
+    }
+
+    function renderVMs(vms) {
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>VM ID</th>
+            <th>Name</th>
+            <th>IP Address</th>
+            <th>Status</th>
+            <th>Owner ID</th>
+            <th>OS ID</th>
+            <th>Applications</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${vms.map((vm, i) => `
+            <tr class="vm-row" data-index="${i}">
+              <td>${vm.id}</td>
+              <td>${vm.vm_name}</td>
+              <td>${vm.vm_ip}</td>
+              <td>${vm.vm_status}</td>
+              <td>${vm.owner_id}</td>
+              <td>${vm.os_id}</td>
+              <td>${vm.application_ids.join(', ')}</td>
+              <td>
+                <button onclick="editVM(${vm.id})">Edit</button>
+                <button onclick="deleteVM(${vm.id})">Delete</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      document.getElementById('vm-table').innerHTML = '';
+      document.getElementById('vm-table').appendChild(table);
+    }
+
+    document.getElementById('vmForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const vmId = document.getElementById('vmId').value;
+      const vmName = document.getElementById('vmName').value;
+      const vmIP = document.getElementById('vmIP').value;
+      const vmStatus = document.getElementById('vmStatus').value;
+      const ownerId = document.getElementById('ownerId').value;
+      const osId = document.getElementById('osId').value;
+      const applicationIds = document.getElementById('applicationIds').value.split(',').map(Number);
+
+      if (vmId) {
+        // Update existing VM
+        updateVM(vmId, { vm_status: vmStatus });
+      } else {
+        // Create new VM
+        createVM({ vm_name: vmName, vm_ip: vmIP, vm_status: vmStatus, owner_id: ownerId, os_id: osId, application_ids: applicationIds });
+      }
+
+      // Reset the form
+      document.getElementById('vmForm').reset();
+      fetchVMs(); // Refresh the VM list
+    });
+
+    function createVM(vmData) {
+      fetch('http://localhost:8088/api/vms', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(vmData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to create VM.");
+        }
+        return response.json();
+      })
+      .then(() => {
+        fetchVMs(); // Refresh the VM list
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    }
+
+    function updateVM(id, vmData) {
+      fetch(`http://localhost:8088/api/vms/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(vmData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to update VM.");
+        }
+        return response.json();
+      })
+      .then(() => {
+        fetchVMs(); // Refresh the VM list
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    }
+
+    function editVM(id) {
+      fetch(`http://localhost:8088/api/vms/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch VM details.");
+        }
+        return response.json();
+      })
+      .then(vm => {
+        document.getElementById('vmId').value = vm.id;
+        document.getElementById('vmName').value = vm.vm_name;
+        document.getElementById('vmIP').value = vm.vm_ip;
+        document.getElementById('vmStatus').value = vm.vm_status;
+        document.getElementById('ownerId').value = vm.owner_id;
+        document.getElementById('osId').value = vm.os_id;
+        document.getElementById('applicationIds').value = vm.application_ids.join(',');
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    }
+
+    function deleteVM(id) {
+      fetch(`http://localhost:8088/api/vms/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to delete VM.");
+        }
+        fetchVMs(); // Refresh the VM list
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    }
+
+    // Fetch VMs on page load
+    fetchVMs();
+  </script>
+</body>
+</html>
