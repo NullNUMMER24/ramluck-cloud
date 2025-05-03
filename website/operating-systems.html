@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All OS</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>User List</h1>
+  <div id="os-table">Loading...</div>
+
+  <script>
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      window.location.href = 'index.html'; // Redirect if not logged in
+    }
+
+    fetch('http://localhost:8088/api/users', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch users.");
+      }
+      return response.json();
+    })
+    .then(operating_system => {
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>OSID</th>
+            <th>OS-Name</th>
+            <th>Version</th>
+            <th>Link to website</th>
+            <th>Last updated at</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.map(user => `
+            <tr>
+              <td>${operating_system.OSID}</td>
+              <td>${operating_system.OSName}</td>
+              <td>${operating_system.OSVersion}</td>
+              <td>${operating_system.LinkToOSWebsite}</td>
+              <td>${new Date(operating_system.UpatedAt).toLocaleString()}</td>
+              <td>${new Date(operating_system.CreatedAt).toLocaleString()}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      document.getElementById('os-table').innerHTML = '';
+      document.getElementById('os-table').appendChild(table);
+    })
+    .catch(error => {
+      console.error(error);
+      document.getElementById('os-table').innerText = "Error loading os.";
+    });
+  </script>
+</body>
+</html>
