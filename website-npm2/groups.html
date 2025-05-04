@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex">
+        <!-- Include your sidebar here (same as dashboard.html) -->
+        <aside class="bg-white w-64 shadow-lg fixed h-full">
+          <div class="p-4">
+              <!-- Logo -->
+              <div class="flex items-center gap-2 mb-8">
+                  <i class="fas fa-rocket text-blue-600 text-2xl"></i>
+                  <span class="text-xl font-bold">RAMLUCK-CLOUD</span>
+              </div>
+
+              <!-- Navigation Menu -->
+              <nav>
+                  <ul class="space-y-2">
+                      <li>
+                          <a href="dashboard.html" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-home w-6"></i>
+                              Dashboard
+                          </a>
+                      </li>
+                      <li>
+                          <a href="users.html" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-users -bar w-6"></i>
+                              Users
+                          </a>
+                      </li>
+                      <li>
+                          <a href="groups.html" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-user-circle w-6"></i>
+                              Groups
+                          </a>
+                      </li>
+                      <li>
+                          <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-server w-6"></i>
+                              Virtual Machines
+                          </a>
+                      </li>
+                      <li>
+                        <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                            <i class="fas fa-cubes w-6"></i>
+                            Applications
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                            <i class="fas fa-television w-6"></i>
+                            Operating Systems
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                            <i class="fas fa-cog w-6"></i>
+                            Hosts
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                            <i class="fas fa-folder w-6"></i>
+                            Projects
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                            <i class="fas fa-shopping-cart w-6"></i>
+                            Customer Portal
+                        </a>
+                      </li>
+                  </ul>
+              </nav>
+          </div>
+      </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800">Group Management</h1>
+                <button onclick="openGroupModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-plus mr-2"></i>New Group
+                </button>
+            </div>
+
+            <!-- Group Table -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <table class="w-full" id="groupsTable">
+                    <thead>
+                        <tr class="text-left text-gray-500 border-b">
+                            <th class="pb-3">ID</th>
+                            <th class="pb-3">Name</th>
+                            <th class="pb-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupsTableBody">
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Group Modal -->
+            <div id="groupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div class="bg-white rounded-xl p-6 w-96">
+                    <h2 class="text-xl font-bold mb-4" id="modalTitle">New Group</h2>
+                    <form id="groupForm" onsubmit="handleGroupSubmit(event)">
+                        <input type="hidden" id="groupId">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Group Name</label>
+                            <input type="text" id="groupName" required class="w-full p-2 border rounded-lg">
+                        </div>
+                        <div class="flex justify-end gap-3">
+                            <button type="button" onclick="closeGroupModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8088/api';
+        const authToken = localStorage.getItem('authToken');
+
+        // Load groups
+        async function loadGroups() {
+            try {
+                const response = await fetch(`${API_BASE}/groups`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const groups = await response.json();
+                renderGroups(groups);
+            } catch (error) {
+                console.error('Error loading groups:', error);
+            }
+        }
+
+        // Render groups in the table
+        function renderGroups(groups) {
+            const tbody = document.getElementById('groupsTableBody');
+            tbody.innerHTML = groups.map(group => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-3">${group.GroupID}</td>
+                    <td>${group.GroupName}</td>
+                    <td>
+                        <button onclick="editGroup('${group.GroupID}')" class="text-blue-600 hover:text-blue-800 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteGroup('${group.GroupID}')" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Delete group
+        async function deleteGroup(groupId) {
+            if (confirm('Are you sure you want to delete this group?')) {
+                try {
+                    await fetch(`${API_BASE}/groups/${groupId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+                    loadGroups();
+                } catch (error) {
+                    console.error('Error deleting group:', error);
+                }
+            }
+        }
+
+        // Edit group
+        function editGroup(groupId) {
+            fetch(`${API_BASE}/groups/${groupId}`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            })
+            .then(res => res.json())
+            .then(group => {
+                document.getElementById('groupId').value = group.GroupID;
+                document.getElementById('groupName').value = group.GroupName;
+                document.getElementById('modalTitle').textContent = 'Edit Group';
+                document.getElementById('groupModal').classList.remove('hidden');
+            })
+            .catch(err => {
+                console.error('Edit failed:', err);
+                alert('Could not load group for editing.');
+            });
+        }
+
+        // Handle group form submission (create/update)
+        async function handleGroupSubmit(event) {
+            event.preventDefault();
+
+            const groupId = document.getElementById('groupId').value;
+            const isEdit = Boolean(groupId);
+            const url = isEdit
+                ? `${API_BASE}/groups/${groupId}`
+                : `${API_BASE}/groups`;
+
+            const groupData = {
+                groupName: document.getElementById('groupName').value
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(groupData)
+                });
+
+                if (!response.ok) {
+                    const err = await response.text();
+                    throw new Error(err || 'Failed to save group');
+                }
+
+                closeGroupModal();
+                loadGroups();
+            } catch (error) {
+                console.error('Error saving group:', error);
+                alert('Could not save group: ' + error.message);
+            }
+        }
+
+        // Open the group modal for new group
+        function openGroupModal() {
+            document.getElementById('groupModal').classList.remove('hidden');
+            document.getElementById('groupId').value = '';
+            document.getElementById('groupForm').reset();
+            document.getElementById('modalTitle').textContent = 'New Group';
+        }
+
+        // Close the group modal
+        function closeGroupModal() {
+            document.getElementById('groupModal').classList.add('hidden');
+        }
+
+        // Load groups when the page is ready
+        loadGroups();
+    </script>  
+</body>
+</html>
