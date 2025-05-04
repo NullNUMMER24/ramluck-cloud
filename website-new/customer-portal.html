@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Portal</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+  <div class="w-full max-w-2xl bg-white rounded-xl shadow-lg p-6">
+    <h1 class="text-2xl font-bold mb-6 text-center">Customer Portal</h1>
+
+    <!-- Progress Bar -->
+    <div class="relative pt-1 mb-6">
+      <div class="overflow-hidden h-3 mb-4 text-xs flex rounded bg-gray-200">
+        <div id="progressBar" style="width: 25%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500 transition-all duration-500"></div>
+      </div>
+      <div class="flex justify-between text-xs text-gray-600">
+        <span>1. Mode</span>
+        <span>2. SLA</span>
+        <span>3. Project</span>
+        <span>4. Summary</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Mode Selection -->
+    <div id="step1" class="space-y-4">
+      <p class="text-gray-700 text-center mb-4">Select a mode to continue:</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button onclick="selectMode('Website')" class="p-4 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-700 font-semibold">Website</button>
+        <button onclick="selectMode('Application')" class="p-4 bg-green-100 hover:bg-green-200 rounded-lg text-green-700 font-semibold">Application</button>
+        <button onclick="selectMode('Nerd Modus')" class="p-4 bg-purple-100 hover:bg-purple-200 rounded-lg text-purple-700 font-semibold">Nerd Modus</button>
+      </div>
+    </div>
+
+    <!-- Step 2: SLA Selection -->
+    <div id="step2" class="hidden space-y-4">
+      <h2 class="text-lg font-semibold text-center">Select an SLA</h2>
+      <div class="space-y-3">
+        <button onclick="selectSLA('Casual')" class="w-full text-left border p-4 rounded-lg hover:bg-gray-100">
+          <strong>Casual</strong><br>
+          <small class="text-gray-600">Ideal for Websites which are not critical</small>
+        </button>
+        <button onclick="selectSLA('Business')" class="w-full text-left border p-4 rounded-lg hover:bg-gray-100">
+          <strong>Business</strong><br>
+          <small class="text-gray-600">Best effort. Downtimes after 19:00-06:00 allowed</small>
+        </button>
+        <button onclick="selectSLA('Critical')" class="w-full text-left border p-4 rounded-lg hover:bg-gray-100">
+          <strong>Critical</strong><br>
+          <small class="text-gray-600">These Systems are not hosted in our cloud</small>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Project Selection -->
+    <div id="step3" class="hidden space-y-4">
+      <h2 class="text-lg font-semibold text-center">Choose or Create a Project</h2>
+      <div class="space-y-2">
+        <select id="projectSelect" class="w-full border p-2 rounded-lg">
+          <option value="" disabled selected>Select Existing Project</option>
+          <option value="Project A">Project A</option>
+          <option value="Project B">Project B</option>
+        </select>
+        <input type="text" id="newProjectInput" placeholder="Or enter a new project name" class="w-full border p-2 rounded-lg">
+      </div>
+      <div class="text-center">
+        <button onclick="submitProject()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Summary -->
+    <div id="step4" class="hidden space-y-4 text-center">
+      <h2 class="text-lg font-semibold">Summary</h2>
+      <p><strong>Mode:</strong> <span id="summaryMode"></span></p>
+      <p><strong>SLA:</strong> <span id="summarySLA"></span></p>
+      <p><strong>Project:</strong> <span id="summaryProject"></span></p>
+      <button class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Finish Setup</button>
+    </div>
+  </div>
+
+  <script>
+    let selectedMode = '';
+    let selectedSLA = '';
+    let selectedProject = '';
+
+    function selectMode(mode) {
+      selectedMode = mode;
+      document.getElementById('step1').classList.add('hidden');
+
+      if (mode === 'Website') {
+        document.getElementById('step2').classList.remove('hidden');
+        updateProgress(50);
+      } else {
+        // Direct to summary if not Website (for now)
+        selectedSLA = 'N/A';
+        selectedProject = 'N/A';
+        showSummary();
+      }
+    }
+
+    function selectSLA(sla) {
+      selectedSLA = sla;
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step3').classList.remove('hidden');
+      updateProgress(75);
+    }
+
+    function submitProject() {
+      const newProj = document.getElementById('newProjectInput').value.trim();
+      const selected = document.getElementById('projectSelect').value;
+
+      if (newProj) {
+        selectedProject = newProj;
+      } else if (selected) {
+        selectedProject = selected;
+      } else {
+        alert('Please select or create a project');
+        return;
+      }
+
+      document.getElementById('step3').classList.add('hidden');
+      showSummary();
+    }
+
+    function showSummary() {
+      document.getElementById('step4').classList.remove('hidden');
+      document.getElementById('summaryMode').textContent = selectedMode;
+      document.getElementById('summarySLA').textContent = selectedSLA;
+      document.getElementById('summaryProject').textContent = selectedProject;
+      updateProgress(100);
+    }
+
+    function updateProgress(percent) {
+      document.getElementById('progressBar').style.width = percent + '%';
+    }
+  </script>
+
+</body>
+</html>

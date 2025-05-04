@@ -71,3 +71,8 @@ curl -X DELETE http://localhost:8080/api/groups/1/users \
 ```bash
 curl -H "Authorization: Bearer $ADMIN_TOKEN" http://localhost:8080/api/groups/1
 ```
+- [] Update DB schema
+  - [] Project table needed
+  - [] Invoice table needed
+  - [] Option to disable billing for projects
+  - [] Pricing table

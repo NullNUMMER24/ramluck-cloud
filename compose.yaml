@@ -44,20 +44,9 @@ services:
     ports:
       - 8081:80
     volumes:
-      - ./website:/usr/local/apache2/htdocs/
+      - ./website-new:/usr/local/apache2/htdocs/
     networks:
       - ramluckcloud-network
-
-  web2:
-    image: httpd:latest
-    container_name: ramluckcloud-web2
-    ports:
-      - 8082:80
-    volumes:
-      - ./website-npm2:/usr/local/apache2/htdocs/
-    networks:
-      - ramluckcloud-network
-
 
 networks:
   ramluckcloud-network:
