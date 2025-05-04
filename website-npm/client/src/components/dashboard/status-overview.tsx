@@ -74,6 +74,29 @@ interface StatusData {
 export default function StatusOverview() {
   const { data: statusData, isLoading } = useQuery<StatusData>({
     queryKey: ['/api/dashboard/status'],
+    // Adapt the data from the external API format if needed
+    select: (data: any) => {
+      // If your external API returns data in a different format,
+      // transform it here to match the expected StatusData interface
+      return {
+        hosts: {
+          total: data?.hosts?.total || data?.host_count || 0,
+          change: data?.hosts?.change || 8,
+        },
+        vms: {
+          active: data?.vms?.active || data?.active_vm_count || 0,
+          change: data?.vms?.change || 5,
+        },
+        users: {
+          total: data?.users?.total || data?.user_count || 0,
+          change: data?.users?.change || 12,
+        },
+        applications: {
+          total: data?.applications?.total || data?.application_count || 0,
+          change: data?.applications?.change || 3,
+        }
+      };
+    }
   });
 
   if (isLoading) {

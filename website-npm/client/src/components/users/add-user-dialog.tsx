@@ -53,6 +53,18 @@ export default function AddUserDialog({ isOpen, onClose }: AddUserDialogProps) {
   
   const { data: groups } = useQuery({
     queryKey: ['/api/groups'],
+    // Transform data from external API if needed
+    select: (data: any) => {
+      // If the external API returns groups in a different format,
+      // transform them here to match the expected interface
+      if (Array.isArray(data)) {
+        return data.map((group: any) => ({
+          id: group.id?.toString() || group.group_id?.toString() || Math.random().toString(),
+          name: group.name || group.group_name || 'Unknown Group'
+        }));
+      }
+      return [];
+    }
   });
   
   const form = useForm<UserFormValues>({

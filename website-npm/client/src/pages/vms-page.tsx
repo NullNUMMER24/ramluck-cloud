@@ -27,6 +27,25 @@ export default function VmsPage() {
 
   const { data: vms, isLoading } = useQuery({
     queryKey: ['/api/vms'],
+    // Transform data from external API if needed
+    select: (data: any) => {
+      // If the external API returns VMs in a different format,
+      // transform them here to match the expected interface
+      if (Array.isArray(data)) {
+        return data.map((vm: any) => ({
+          id: vm.id?.toString() || vm.vm_id?.toString() || Math.random().toString(),
+          name: vm.name || vm.vm_name || 'Unknown VM',
+          ipAddress: vm.ipAddress || vm.ip_address || vm.vm_ip || '0.0.0.0',
+          host: vm.host || vm.host_name || 'Unknown Host',
+          cpu: vm.cpu || vm.cpu_cores || 2,
+          memory: vm.memory || vm.memory_gb || 4,
+          storage: vm.storage || vm.storage_gb || 50,
+          status: vm.status || vm.vm_status || 'stopped',
+          os: vm.os || vm.operating_system || 'Linux'
+        }));
+      }
+      return [];
+    }
   });
 
   useEffect(() => {

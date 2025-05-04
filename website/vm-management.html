@@ -1,218 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VM Management</title>
-  <style>
-    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    tr.vm-row { cursor: pointer; background-color: #f0f0f0; }
-    tr.details-row { display: none; background-color: #fafafa; }
-    form { margin-bottom: 20px; }
-    input[type="text"], input[type="number"] { padding: 10px; margin: 5px 0; width: calc(100% - 22px); }
-    button { padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background-color: #218838; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VM Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.2/dist/full.css" rel="stylesheet">
+    <style>
+        .vm-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .vm-table th, .vm-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .vm-table tr:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-running { background-color: #10b981; }
+        .status-stopped { background-color: #ef4444; }
+        .status-maintenance { background-color: #f59e0b; }
+        
+        .action-buttons button {
+            margin: 0 4px;
+            padding: 4px 8px;
+        }
+    </style>
 </head>
-<body>
-  <h1>Virtual Machine Management</h1>
-  
-  <form id="vmForm">
-    <input type="hidden" id="vmId">
-    <input type="text" id="vmName" placeholder="VM Name" required>
-    <input type="text" id="vmIP" placeholder="VM IP Address" required>
-    <input type="text" id="vmStatus" placeholder="VM Status" required>
-    <input type="number" id="ownerId" placeholder="Owner ID" required>
-    <input type="number" id="osId" placeholder="OS ID" required>
-    <input type="text" id="applicationIds" placeholder="Application IDs (comma-separated)" required>
-    <button type="submit">Add/Update VM</button>
-  </form>
+<body class="p-8 bg-gray-50">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Virtual Machine Management</h1>
+            <div class="flex gap-4">
+                <input type="text" id="searchInput" placeholder="Search VMs..." 
+                       class="input input-bordered w-64">
+                <button onclick="showVmForm()" class="btn btn-primary">
+                    <i class="fas fa-plus mr-2"></i>Add VM
+                </button>
+            </div>
+        </div>
 
-  <div id="vm-table">Loading...</div>
+        <div class="bg-white rounded-lg shadow overflow-x-auto">
+            <table class="vm-table">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th>Name</th>
+                        <th>IP Address</th>
+                        <th>Status</th>
+                        <th>CPU</th>
+                        <th>Memory</th>
+                        <th>Storage</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="vmTableBody">
+                    <!-- VMs will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-  <script>
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      window.location.href = 'index.html'; // Redirect if not logged in
-    }
+    <!-- VM Form Modal -->
+    <dialog id="vmModal" class="modal">
+        <div class="modal-box w-11/12 max-w-2xl">
+            <h3 class="font-bold text-lg" id="modalTitle">New VM</h3>
+            <form id="vmForm" class="grid grid-cols-2 gap-4 mt-4">
+                <input type="hidden" id="vmId">
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">VM Name</span>
+                    </label>
+                    <input type="text" id="vmName" required class="input input-bordered">
+                </div>
 
-    // Fetch all VMs from the API
-    function fetchVMs() {
-      fetch('http://localhost:8088/api/vms', {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + token
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">IP Address</span>
+                    </label>
+                    <input type="text" id="vmIp" required class="input input-bordered">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Status</span>
+                    </label>
+                    <select id="vmStatus" class="select select-bordered w-full">
+                        <option value="running">Running</option>
+                        <option value="stopped">Stopped</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">CPU Cores</span>
+                    </label>
+                    <input type="number" id="vmCpu" required class="input input-bordered">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Memory (GB)</span>
+                    </label>
+                    <input type="number" id="vmMemory" required class="input input-bordered">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Storage (GB)</span>
+                    </label>
+                    <input type="number" id="vmStorage" required class="input input-bordered">
+                </div>
+
+                <div class="col-span-2 flex justify-end gap-2 mt-4">
+                    <button type="button" onclick="document.getElementById('vmModal').close()" 
+                            class="btn btn-ghost">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save VM</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script>
+        const API_BASE = 'http://localhost:8088/api/vms';
+        let currentVms = [];
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadVms();
+            setupSearch();
+        });
+
+        async function loadVms() {
+            try {
+                const response = await fetch(API_BASE);
+                currentVms = await response.json();
+                renderVms(currentVms);
+            } catch (error) {
+                alert('Error loading VMs: ' + error.message);
+            }
         }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch VMs.");
+
+        function renderVms(vms) {
+            const tbody = document.getElementById('vmTableBody');
+            tbody.innerHTML = vms.map(vm => `
+                <tr>
+                    <td>${vm.name}</td>
+                    <td>${vm.ip}</td>
+                    <td>
+                        <span class="status-indicator status-${vm.status}"></span>
+                        ${vm.status.charAt(0).toUpperCase() + vm.status.slice(1)}
+                    </td>
+                    <td>${vm.cpu}</td>
+                    <td>${vm.memory}GB</td>
+                    <td>${vm.storage}GB</td>
+                    <td class="action-buttons">
+                        <button onclick="editVm('${vm.id}')" class="btn btn-sm btn-outline">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteVm('${vm.id}')" class="btn btn-sm btn-error">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
         }
-        return response.json();
-      })
-      .then(vms => {
-        renderVMs(vms);
-      })
-      .catch(error => {
-        console.error(error);
-        document.getElementById('vm-table').innerText = "Error loading VMs.";
-      });
-    }
 
-    function renderVMs(vms) {
-      const table = document.createElement('table');
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th>VM ID</th>
-            <th>Name</th>
-            <th>IP Address</th>
-            <th>Status</th>
-            <th>Owner ID</th>
-            <th>OS ID</th>
-            <th>Applications</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${vms.map((vm, i) => `
-            <tr class="vm-row" data-index="${i}">
-              <td>${vm.id}</td>
-              <td>${vm.vm_name}</td>
-              <td>${vm.vm_ip}</td>
-              <td>${vm.vm_status}</td>
-              <td>${vm.owner_id}</td>
-              <td>${vm.os_id}</td>
-              <td>${vm.application_ids.join(', ')}</td>
-              <td>
-                <button onclick="editVM(${vm.id})">Edit</button>
-                <button onclick="deleteVM(${vm.id})">Delete</button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      `;
-      document.getElementById('vm-table').innerHTML = '';
-      document.getElementById('vm-table').appendChild(table);
-    }
-
-    document.getElementById('vmForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const vmId = document.getElementById('vmId').value;
-      const vmName = document.getElementById('vmName').value;
-      const vmIP = document.getElementById('vmIP').value;
-      const vmStatus = document.getElementById('vmStatus').value;
-      const ownerId = document.getElementById('ownerId').value;
-      const osId = document.getElementById('osId').value;
-      const applicationIds = document.getElementById('applicationIds').value.split(',').map(Number);
-
-      if (vmId) {
-        // Update existing VM
-        updateVM(vmId, { vm_status: vmStatus });
-      } else {
-        // Create new VM
-        createVM({ vm_name: vmName, vm_ip: vmIP, vm_status: vmStatus, owner_id: ownerId, os_id: osId, application_ids: applicationIds });
-      }
-
-      // Reset the form
-      document.getElementById('vmForm').reset();
-      fetchVMs(); // Refresh the VM list
-    });
-
-    function createVM(vmData) {
-      fetch('http://localhost:8088/api/vms', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(vmData)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Failed to create VM.");
+        function setupSearch() {
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filtered = currentVms.filter(vm => 
+                    vm.name.toLowerCase().includes(searchTerm) ||
+                    vm.ip.includes(searchTerm) ||
+                    vm.status.includes(searchTerm)
+                );
+                renderVms(filtered);
+            });
         }
-        return response.json();
-      })
-      .then(() => {
-        fetchVMs(); // Refresh the VM list
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    }
 
-    function updateVM(id, vmData) {
-      fetch(`http://localhost:8088/api/vms/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(vmData)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Failed to update VM.");
+        async function deleteVm(id) {
+            if (confirm('Are you sure you want to delete this VM?')) {
+                try {
+                    await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
+                    await loadVms();
+                } catch (error) {
+                    alert('Error deleting VM: ' + error.message);
+                }
+            }
         }
-        return response.json();
-      })
-      .then(() => {
-        fetchVMs(); // Refresh the VM list
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    }
 
-    function editVM(id) {
-      fetch(`http://localhost:8088/api/vms/${id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + token
+        function showVmForm(vm = null) {
+            const form = document.getElementById('vmForm');
+            const modal = document.getElementById('vmModal');
+            
+            if (vm) {
+                document.getElementById('vmId').value = vm.id;
+                document.getElementById('vmName').value = vm.name;
+                document.getElementById('vmIp').value = vm.ip;
+                document.getElementById('vmStatus').value = vm.status;
+                document.getElementById('vmCpu').value = vm.cpu;
+                document.getElementById('vmMemory').value = vm.memory;
+                document.getElementById('vmStorage').value = vm.storage;
+                document.getElementById('modalTitle').textContent = 'Edit VM';
+            } else {
+                form.reset();
+                document.getElementById('modalTitle').textContent = 'New VM';
+            }
+            
+            modal.showModal();
         }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch VM details.");
-        }
-        return response.json();
-      })
-      .then(vm => {
-        document.getElementById('vmId').value = vm.id;
-        document.getElementById('vmName').value = vm.vm_name;
-        document.getElementById('vmIP').value = vm.vm_ip;
-        document.getElementById('vmStatus').value = vm.vm_status;
-        document.getElementById('ownerId').value = vm.owner_id;
-        document.getElementById('osId').value = vm.os_id;
-        document.getElementById('applicationIds').value = vm.application_ids.join(',');
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    }
 
-    function deleteVM(id) {
-      fetch(`http://localhost:8088/api/vms/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': 'Bearer ' + token
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Failed to delete VM.");
-        }
-        fetchVMs(); // Refresh the VM list
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    }
+        document.getElementById('vmForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const vmData = {
+                id: document.getElementById('vmId').value,
+                name: document.getElementById('vmName').value,
+                ip: document.getElementById('vmIp').value,
+                status: document.getElementById('vmStatus').value,
+                cpu: document.getElementById('vmCpu').value,
+                memory: document.getElementById('vmMemory').value,
+                storage: document.getElementById('vmStorage').value
+            };
 
-    // Fetch VMs on page load
-    fetchVMs();
-  </script>
+            try {
+                const method = vmData.id ? 'PUT' : 'POST';
+                const url = vmData.id ? `${API_BASE}/${vmData.id}` : API_BASE;
+                
+                await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(vmData)
+                });
+                
+                document.getElementById('vmModal').close();
+                await loadVms();
+            } catch (error) {
+                alert('Error saving VM: ' + error.message);
+            }
+        });
+
+        async function editVm(id) {
+            const vm = currentVms.find(vm => vm.id === id);
+            if (vm) showVmForm(vm);
+        }
+    </script>
+    <script src="https://kit.fontawesome.com/your-kit-code.js"></script>
 </body>
 </html>

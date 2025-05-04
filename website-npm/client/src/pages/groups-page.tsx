@@ -7,13 +7,52 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import { Group } from "@shared/schema";
+import { Group as DbGroup } from "@shared/schema";
+
+// Extended Group interface for frontend with additional properties
+interface Group extends DbGroup {
+  role?: string;
+  memberCount?: number;
+  members?: Array<{
+    id: number;
+    username: string;
+    fullName?: string;
+    color?: string;
+  }>;
+}
 
 export default function GroupsPage() {
   const [isAddGroupOpen, setIsAddGroupOpen] = useState(false);
 
   const { data: groups = [], isLoading } = useQuery<Group[]>({
     queryKey: ['/api/groups'],
+    // Transform data from external API if needed
+    select: (data: any) => {
+      // If the external API returns groups in a different format,
+      // transform them here to match the expected Group interface
+      if (Array.isArray(data)) {
+        return data.map((group: any) => ({
+          id: typeof group.id === 'number' ? group.id : Number(group.id?.toString() || group.group_id?.toString() || "0"),
+          name: group.name || group.group_name || 'Unknown Group',
+          description: group.description || group.group_description || null,
+          colorScheme: group.colorScheme || group.color_scheme || null,
+          permissions: group.permissions || null,
+          createdAt: group.createdAt || group.created_at || null,
+          // Extended properties
+          role: group.role || group.group_role || 'user',
+          memberCount: group.memberCount || group.member_count || 0,
+          members: Array.isArray(group.members) 
+            ? group.members.map((member: any) => ({
+                id: member.id || member.user_id || 0,
+                username: member.username || 'user',
+                fullName: member.fullName || member.full_name || '',
+                color: member.color || ''
+              }))
+            : []
+        }));
+      }
+      return [];
+    }
   });
 
   useEffect(() => {

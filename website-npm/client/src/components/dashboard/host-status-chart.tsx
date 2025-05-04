@@ -23,6 +23,17 @@ export default function HostStatusChart() {
 
   const { data: hostStatusData, isLoading } = useQuery<HostStatusData>({
     queryKey: ['/api/dashboard/host-status'],
+    // Transform data from external API if needed
+    select: (data: any) => {
+      // If your external API returns data in a different format,
+      // transform it here to match the expected HostStatusData interface
+      return {
+        healthy: data?.healthy || data?.healthy_hosts || 0,
+        warning: data?.warning || data?.warning_hosts || 0,
+        critical: data?.critical || data?.critical_hosts || 0,
+        offline: data?.offline || data?.offline_hosts || 0
+      };
+    }
   });
 
   useEffect(() => {

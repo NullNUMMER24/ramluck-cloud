@@ -37,6 +37,25 @@ export default function ApplicationsPage() {
 
   const { data: applications = [], isLoading } = useQuery<Application[]>({
     queryKey: ['/api/applications'],
+    // Transform data from external API if needed
+    select: (data: any) => {
+      // If the external API returns applications in a different format,
+      // transform them here to match the expected Application interface
+      if (Array.isArray(data)) {
+        return data.map((app: any) => ({
+          id: app.id?.toString() || app.application_id?.toString() || Math.random().toString(),
+          name: app.name || app.application_name || 'Unknown App',
+          description: app.description || app.application_description || '',
+          version: app.version || app.application_version || '1.0',
+          status: app.status || app.application_status || 'stopped',
+          host: app.host || app.host_name || 'localhost',
+          port: app.port || app.application_port || 8080,
+          installedDate: app.installedDate || app.installed_date || app.created_at || new Date().toISOString(),
+          type: app.type || app.application_type || 'web'
+        }));
+      }
+      return [];
+    }
   });
 
   useEffect(() => {

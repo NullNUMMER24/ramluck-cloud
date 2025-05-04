@@ -28,6 +28,23 @@ export default function UserTable() {
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['/api/users'],
+    // Transform data from external API if needed
+    select: (data: any) => {
+      // If the external API returns users in a different format,
+      // transform them here to match the expected interface
+      if (Array.isArray(data)) {
+        return data.map((user: any) => ({
+          id: user.id?.toString() || user.user_id?.toString() || Math.random().toString(),
+          username: user.username || 'username',
+          email: user.email || 'email@example.com',
+          fullName: user.fullName || user.full_name || user.name || '',
+          group: user.group || user.role || 'user',
+          status: user.status || 'active',
+          createdAt: user.createdAt || user.created_at || new Date().toISOString()
+        }));
+      }
+      return [];
+    }
   });
 
   const filteredUsers = users?.filter(user => {

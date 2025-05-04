@@ -12,6 +12,20 @@ interface ActivityItem {
 export default function RecentActivity() {
   const { data: activities, isLoading } = useQuery<ActivityItem[]>({
     queryKey: ['/api/dashboard/activities'],
+    // Transform data from external API if needed
+    select: (data: any) => {
+      // If the external API returns activities in a different format,
+      // transform them here to match the expected ActivityItem[] interface
+      if (Array.isArray(data)) {
+        return data.map((item: any) => ({
+          id: item.id?.toString() || item.activity_id?.toString() || Math.random().toString(),
+          type: item.type || item.activity_type || 'warning',
+          message: item.message || item.activity_message || 'System activity',
+          timestamp: item.timestamp || item.created_at || new Date().toISOString()
+        }));
+      }
+      return [];
+    }
   });
 
   const getActivityIcon = (type: string) => {

@@ -1,0 +1,166 @@
+1. User Login
+bash
+
+curl -X POST http://localhost:8088/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "user", "password": "password"}'
+
+2. Register User
+bash
+
+curl -X POST http://localhost:8088/api/login/register \
+  -H "Content-Type: application/json" \
+  -d '{"username": "newuser", "password": "newpassword", "email": "user@example.com"}'
+
+3. Create User (Admin)
+bash
+
+curl -X POST http://localhost:8088/api/users \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"username": "user2", "password": "pass123", "email": "user2@example.com"}'
+
+4. Get All Users (Admin)
+bash
+
+curl -X GET http://localhost:8088/api/users \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
+
+5. Update User
+bash
+
+curl -X PUT http://localhost:8088/api/users/1 \
+  -H "Authorization: Bearer $USER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"username": "newname", "email": "newemail@example.com"}'
+
+6. Delete User
+bash
+
+curl -X DELETE http://localhost:8088/api/users/2 \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
+
+Group Management
+
+1. Create Group
+bash
+
+curl -X POST http://localhost:8088/api/groups \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"group_name": "Developers", "role": "developer"}'
+
+2. Update Group
+bash
+
+curl -X PUT http://localhost:8088/api/groups/1 \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"group_name": "Senior Developers"}'
+
+3. Add Users to Group
+bash
+
+curl -X POST http://localhost:8088/api/groups/1/users \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"user_ids": [1, 2, 3]}'
+
+4. Remove Users from Group
+bash
+
+curl -X DELETE http://localhost:8088/api/groups/1/users \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"user_ids": [3]}'
+
+5. Get Group Details
+bash
+
+curl -X GET http://localhost:8088/api/groups/1 \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
+
+Operating Systems
+
+1. Create OS
+bash
+
+curl -X POST http://localhost:8088/api/os \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"os_name": "Ubuntu", "os_version": "22.04", "link_to_os_website": "https://ubuntu.com"}'
+
+2. Update OS
+bash
+
+curl -X PUT http://localhost:8088/api/os/1 \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"os_version": "22.04 LTS"}'
+
+3. List All OS
+bash
+
+curl -X GET http://localhost:8088/api/os \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
+
+Virtual Machines
+
+1. Create VM
+bash
+
+curl -X POST http://localhost:8088/api/vms \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vm_name": "Web Server",
+    "vm_ip": "192.168.1.100",
+    "vm_status": "running",
+    "owner_id": 1,
+    "os_id": 1,
+    "application_ids": [1, 2]
+  }'
+
+2. Update VM
+bash
+
+curl -X PUT http://localhost:8088/api/vms/1 \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"vm_status": "maintenance"}'
+
+3. Manage Applications
+bash
+
+curl -X POST http://localhost:8088/api/vms/1/applications \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"add": [3], "remove": [2]}'
+
+Applications
+
+1. Create Application
+bash
+
+curl -X POST http://localhost:8088/api/applications \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "application_name": "Nginx",
+    "application_type": "web-server",
+    "link_to_website": "https://nginx.org"
+  }'
+
+2. Move Application
+bash
+
+curl -X POST http://localhost:8088/api/applications/1/move \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"target_vm_id": 2}'
+
+3. Delete Application
+bash
+
+curl -X DELETE http://localhost:8088/api/applications/1 \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
