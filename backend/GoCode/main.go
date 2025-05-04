@@ -93,6 +93,7 @@ func main() {
 		api.DELETE("/users/:id", api_functions.AuthMiddleware(db), api_functions.DeleteUser(db))
 		api.PUT("/users/:id", api_functions.AuthMiddleware(db), api_functions.UpdateUser(db))
 		api.GET("/users", api_functions.AuthMiddleware(db), api_functions.GetAllUsers(db))
+		api.GET("/users/:id", api_functions.AuthMiddleware(db), api_functions.GetUserByID(db))
 
 		// Group API
 		api.POST("/groups", api_functions.AuthMiddleware(db), api_functions.CreateGroup(db))

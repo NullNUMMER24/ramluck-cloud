@@ -33,6 +33,13 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type UpdateUserRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+	Password string `json:"password,omitempty"` // allow empty
+}
+
 type LoginResponse struct {
 	Token string `json:"token"`
 }
@@ -371,7 +378,7 @@ func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		var req CreateUserRequest
+		var req UpdateUserRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -396,5 +403,17 @@ func UpdateUser(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "User updated successfully", "user": targetUser})
+	}
+}
+
+func GetUserByID(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		var user tables.User
+		if err := db.First(&user, id).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+		c.JSON(http.StatusOK, user)
 	}
 }

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAMLUCK-CLOUD Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex">
+        <!-- Sidebar -->
+        <aside class="bg-white w-64 shadow-lg fixed h-full">
+            <div class="p-4">
+                <!-- Logo -->
+                <div class="flex items-center gap-2 mb-8">
+                    <i class="fas fa-rocket text-blue-600 text-2xl"></i>
+                    <span class="text-xl font-bold">RAMLUCK-CLOUD</span>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="dashboard.html" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                                <i class="fas fa-home w-6"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="users.html" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                                <i class="fas fa-users -bar w-6"></i>
+                                Users
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                                <i class="fas fa-user-circle w-6"></i>
+                                Groups
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                                <i class="fas fa-server w-6"></i>
+                                Virtual Machines
+                            </a>
+                        </li>
+                        <li>
+                          <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-cubes w-6"></i>
+                              Applications
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-television w-6"></i>
+                              Operating Systems
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-cog w-6"></i>
+                              Hosts
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-folder w-6"></i>
+                              Projects
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#" class="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg text-gray-600 hover:text-blue-600 transition-all">
+                              <i class="fas fa-shopping-cart w-6"></i>
+                              Customer Portal
+                          </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-8">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+                <div class="flex items-center gap-4">
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-plus mr-2"></i>New Project
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Total Users</p>
+                            <p class="text-3xl font-bold">2,543</p>
+                        </div>
+                        <i class="fas fa-users text-blue-600 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Revenue</p>
+                            <p class="text-3xl font-bold">$45,230</p>
+                        </div>
+                        <i class="fas fa-dollar-sign text-green-600 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Active Projects</p>
+                            <p class="text-3xl font-bold">24</p>
+                        </div>
+                        <i class="fas fa-tasks text-purple-600 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500">Conversion Rate</p>
+                            <p class="text-3xl font-bold">82%</p>
+                        </div>
+                        <i class="fas fa-chart-line text-red-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-xl font-bold mb-4">Recent Activity</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-gray-500 border-b">
+                                <th class="pb-3">User</th>
+                                <th class="pb-3">Action</th>
+                                <th class="pb-3">Date</th>
+                                <th class="pb-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3">John Doe</td>
+                                <td>Created new project</td>
+                                <td>2024-03-15</td>
+                                <td><span class="text-green-600">Completed</span></td>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
