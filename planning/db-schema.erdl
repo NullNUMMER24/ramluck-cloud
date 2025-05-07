@@ -46,3 +46,17 @@ ApplicationID int PK
 VMID int FK > VM.VMID
 ProductID int FK > Product.ProductID
 Quantity int
+ProjectID int FK > Projects.ProjectID
+
+Projects
+-
+ProjectID int PK
+ProjectName varchar(100)
+
+Invoice
+-
+InvoiceID int PK
+CustomerID in FK > user.userID
+Price int
+DueTo timestamp
+InvoiceCreated timestamp
