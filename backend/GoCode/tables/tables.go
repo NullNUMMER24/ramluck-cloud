@@ -47,17 +47,23 @@ type Application struct {
 }
 
 type VM struct {
-	VMID         uint          `gorm:"primaryKey"`
-	VMName       string        `gorm:"type:varchar(255)"`
-	VMIP         string        `gorm:"type:varchar(255)"`
-	VMStatus     string        `gorm:"type:varchar(255)"`
-	CreatedAt    time.Time     `gorm:"autoCreateTime"`
-	Description  string        `gorm:"type:varchar(255)"`
-	OwnerID      uint          `gorm:"index"`
-	OSID         uint          `gorm:"foreignKey:OSID"`
-	Applications []Application `gorm:"many2many:vm_applications;"`
+	VMID         uint      `gorm:"primaryKey"`
+	VMName       string    `gorm:"type:varchar(255)"`
+	VMIP         string    `gorm:"type:varchar(255)"`
+	VMStatus     string    `gorm:"type:varchar(255)"`
+	CreatedAt    time.Time `gorm:"autoCreateTime"`
+	Description  string    `gorm:"type:varchar(255)"`
 
-	// Relationships
-	Owner Group           `gorm:"foreignKey:OwnerID"`
-	OS    OperatingSystem `gorm:"foreignKey:OSID"`
+	// Foreign key for Owner relationship
+	OwnerID      uint
+	// Relationship field for Owner (GORM will populate this on Preload("Owner"))
+	Owner        Group     `gorm:"foreignKey:OwnerID"`
+
+	// Foreign key for OperatingSystem relationship
+	OSID         uint
+	// Relationship field for OS (GORM will populate this on Preload("OS"))
+	OS           OperatingSystem `gorm:"foreignKey:OSID;references:OSID"` // Use OSID field of VM to link to OSID field of OperatingSystem
+
+	// Many-to-many relationship with Application
+	Applications []Application `gorm:"many2many:vm_applications;"`
 }

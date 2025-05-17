@@ -1,9 +1,12 @@
 # ramluck-cloud
 ## DB Schema
-![diagram](./images/db_diagram.png.png)
+![diagram](./images/db_diagram.png)
 
 ## Mindmap
-![Mindmap](./images/ramluck-cloud-planning.png.png)
+![Mindmap](./images/ramluck-cloud-planning.png)
+
+## Module concept
+![ramluck-cloud-module-concept](./images/ramluck-cloud-module-system.svg)
 
 ## Debug commands
 ### Databse
