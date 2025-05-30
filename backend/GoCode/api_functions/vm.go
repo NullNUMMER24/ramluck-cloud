@@ -3,6 +3,7 @@ package api_functions
 import (
 	"net/http"
 	"ramluck-cloud/tables"
+	"ramluck-cloud/vm_management"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -16,7 +17,7 @@ type CreateVMRequest struct {
 	VMIP           string `json:"vm_ip" binding:"required,ipv4"`
 	VMStatus       string `json:"vm_status" binding:"required,oneof=running stopped maintenance"`
 	Description    string `json:"description"`
-	OwnerID        uint   `json:"owner_id" binding:"required"`
+	OwnerID        uint   `json:"owner_id" binding:"required"` // Renamed
 	OSID           uint   `json:"os_id" binding:"required"`
 	ApplicationIDs []uint `json:"application_ids"`
 }
@@ -94,6 +95,7 @@ func CreateVM(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusCreated, gin.H{"message": "VM created", "vm": vm})
+		vm_management.RenderTemplate(vm.VMName)
 	}
 }
 

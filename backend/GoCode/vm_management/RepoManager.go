@@ -1,4 +1,4 @@
-package main
+package vm_management
 
 import (
 	"fmt"
@@ -11,13 +11,13 @@ import (
 const (
 	// Default to SSH URL, but we'll switch to HTTPS with token if needed
 	repoURL      = "@github.com/NullNUMMER24/ramluck-cloud-hosts.git"
-	localPath    = "./repo" // Local folder to clone into
+	localPath    = "/tmp/repo" // Local folder to clone into
 	branchName   = "main"
 	commitAuthor = "j.rohrbach@sensemail.ch"
 )
 
 // Pulls the latest changes or clones if not already present
-func updateRepo() error {
+func UpdateRepo() error {
 	// Get the repo URL with token for HTTPS if available
 	repoURLWithToken := getRepoURL()
 
@@ -37,8 +37,8 @@ func updateRepo() error {
 }
 
 // Creates a new folder in the repo
-func createFolder(folderName string) error {
-	if err := updateRepo(); err != nil {
+func CreateFolder(folderName string) error {
+	if err := UpdateRepo(); err != nil {
 		return err
 	}
 
@@ -52,7 +52,7 @@ func createFolder(folderName string) error {
 }
 
 // Commits and pushes the new folder to GitHub
-func commitAndPushChanges(message string) error {
+func CommitAndPushChanges(message string) error {
 	//repoURLWithToken := getRepoURL()
 
 	cmds := [][]string{
@@ -86,18 +86,18 @@ func getRepoURL() string {
 }
 
 // Example usage
-func main() {
-	folderName := "new-feature-folder"
+// func main() {
+// 	folderName := "new-feature-folder"
 
-	if err := createFolder(folderName); err != nil {
-		fmt.Println("Error creating folder:", err)
-		return
-	}
+// 	if err := createFolder(folderName); err != nil {
+// 		fmt.Println("Error creating folder:", err)
+// 		return
+// 	}
 
-	if err := commitAndPushChanges("Add folder: " + folderName); err != nil {
-		fmt.Println("Error committing and pushing changes:", err)
-		return
-	}
+// 	if err := commitAndPushChanges("Add folder: " + folderName); err != nil {
+// 		fmt.Println("Error committing and pushing changes:", err)
+// 		return
+// 	}
 
-	fmt.Println("Successfully pushed changes.")
-}
+// 	fmt.Println("Successfully pushed changes.")
+// }

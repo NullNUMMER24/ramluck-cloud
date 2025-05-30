@@ -46,7 +46,6 @@ curl -X POST http://localhost:8088/api/groups \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"group_name": "Developers", "role": "developer"}'
-{"group":{"GroupID":1,"GroupName":"Developers","Role":"developer","Users":null},"message":"Group created"
 ```
 #### Update group (with gid)
 ```bash
