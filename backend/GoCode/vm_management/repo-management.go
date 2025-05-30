@@ -10,7 +10,7 @@ import (
 // Repo configuration
 const (
 	// Default to SSH URL, but we'll switch to HTTPS with token if needed
-	repoURL      = "git@github.com:NullNUMMER24/ramluck-cloud-hosts.git"
+	repoURL      = "@github.com/NullNUMMER24/ramluck-cloud-hosts.git"
 	localPath    = "./repo" // Local folder to clone into
 	branchName   = "main"
 	commitAuthor = "j.rohrbach@sensemail.ch"
@@ -79,7 +79,7 @@ func getRepoURL() string {
 	token := os.Getenv("GITHUB_TOKEN")
 	if token != "" {
 		// Construct HTTPS URL with token for authentication
-		return fmt.Sprintf("https://%s@github.com/NullNUMMER24/ramluck-cloud-hosts.git", token) // Future note: make this more variable
+		return fmt.Sprintf("https://%s%s", token, repoURL) // Future note: make this more
 	}
 	// Fallback to SSH URL if no token is available
 	return repoURL
