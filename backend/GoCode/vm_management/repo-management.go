@@ -79,7 +79,7 @@ func getRepoURL() string {
 	token := os.Getenv("GITHUB_TOKEN")
 	if token != "" {
 		// Construct HTTPS URL with token for authentication
-		return fmt.Sprintf("https://%s@github.com/NullNUMMER24/ramluck-cloud-hosts.git", token)
+		return fmt.Sprintf("https://%s@github.com/NullNUMMER24/ramluck-cloud-hosts.git", token) // Future note: make this more variable
 	}
 	// Fallback to SSH URL if no token is available
 	return repoURL
