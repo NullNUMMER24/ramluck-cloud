@@ -16,4 +16,5 @@ var (
 	APP_PORT       = "8088"
 	ADMIN_PASSWORD = "admin"
 	JWT_SECRET     = "your-secure-secret-key"
+	REPO_LOCATION  = "/tmp/test-repo" // Location of the repository for VM management
 )

@@ -25,6 +25,7 @@ import (
 	"log"
 	"ramluck-cloud/docs"
 	"ramluck-cloud/tables"
+	"ramluck-cloud/vm_management"
 	"time"
 
 	"ramluck-cloud/api_functions"
@@ -127,6 +128,14 @@ func main() {
 
 	// Server Swagger Doc
 	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// Sync jobs - start concurrent goroutine to sync VMs to Git
+	go func() {
+		for {
+			vm_management.SyncVmsToGit(db)
+			time.Sleep(time.Minute) // Wait 1 minute before the next sync
+		}
+	}()
 
 	// Start the server on port 8080 (or any other port you prefer)
 	if err := router.Run(fmt.Sprintf(":%s", config.APP_PORT)); err != nil {

@@ -3,7 +3,6 @@ package api_functions
 import (
 	"net/http"
 	"ramluck-cloud/tables"
-	"ramluck-cloud/vm_management"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -95,7 +94,7 @@ func CreateVM(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusCreated, gin.H{"message": "VM created", "vm": vm})
-		vm_management.RenderTemplate(vm.VMName)
+		//vm_management.RenderTemplate(vm.VMName)
 	}
 }
 

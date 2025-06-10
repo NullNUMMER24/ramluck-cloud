@@ -5,13 +5,14 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"ramluck-cloud/config"
 )
 
 // Repo configuration
 const (
 	// Default to SSH URL, but we'll switch to HTTPS with token if needed
-	repoURL      = "@github.com/NullNUMMER24/ramluck-cloud-hosts.git"
-	localPath    = "/tmp/repo" // Local folder to clone into
+	repoURL = "@github.com/NullNUMMER24/ramluck-cloud-hosts.git"
+	//localPath    = "/tmp/repo" // Local folder to clone into
 	branchName   = "main"
 	commitAuthor = "j.rohrbach@sensemail.ch"
 )
@@ -21,15 +22,15 @@ func UpdateRepo() error {
 	// Get the repo URL with token for HTTPS if available
 	repoURLWithToken := getRepoURL()
 
-	if _, err := os.Stat(localPath); os.IsNotExist(err) {
+	if _, err := os.Stat(config.REPO_LOCATION); os.IsNotExist(err) {
 		fmt.Println("Cloning repo...")
-		cmd := exec.Command("git", "clone", "-b", branchName, repoURLWithToken, localPath)
+		cmd := exec.Command("git", "clone", "-b", branchName, repoURLWithToken, config.REPO_LOCATION)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
 	} else {
 		fmt.Println("Pulling latest changes...")
-		cmd := exec.Command("git", "-C", localPath, "pull", "origin", branchName)
+		cmd := exec.Command("git", "-C", config.REPO_LOCATION, "pull", "origin", branchName)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
@@ -42,7 +43,7 @@ func CreateFolder(folderName string) error {
 		return err
 	}
 
-	fullPath := filepath.Join(localPath, folderName)
+	fullPath := filepath.Join(config.REPO_LOCATION, folderName)
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		fmt.Println("Creating folder:", folderName)
 		return os.MkdirAll(fullPath, 0755)
@@ -56,9 +57,9 @@ func CommitAndPushChanges(message string) error {
 	//repoURLWithToken := getRepoURL()
 
 	cmds := [][]string{
-		{"git", "-C", localPath, "add", "."},
-		{"git", "-C", localPath, "commit", "-m", message, "--author", commitAuthor},
-		{"git", "-C", localPath, "push", "origin", branchName},
+		{"git", "-C", config.REPO_LOCATION, "add", "."},
+		{"git", "-C", config.REPO_LOCATION, "commit", "-m", message, "--author", commitAuthor},
+		{"git", "-C", config.REPO_LOCATION, "push", "origin", branchName},
 	}
 
 	for _, args := range cmds {
