@@ -20,23 +20,23 @@ services:
     networks:
       - ramluckcloud-network
 
-  # backend:
-  #   build: ./backend/GoCode/
-  #   environment:
-  #     DB_SERVER: ramluckcloud-database
-  #     DB_USER: postgres
-  #     DB_PASSWORD: 123
-  #     DB_NAME: RamluckCloud
-  #     APP_PORT: "8080"
-  #     ADMIN_PASSWORD: "admin"
-  #   container_name: ramluckcloud-backend
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     database:
-  #       condition: service_healthy
-  #   networks:
-  #     - ramluckcloud-network
+  backend:
+    build: ./backend/GoCode/
+    environment:
+      DB_SERVER: ramluckcloud-database
+      DB_USER: postgres
+      DB_PASSWORD: 123
+      DB_NAME: RamluckCloud
+      APP_PORT: "8080"
+      ADMIN_PASSWORD: "admin"
+    container_name: ramluckcloud-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - ramluckcloud-network
 
   web:
     image: httpd:latest

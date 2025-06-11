@@ -1,5 +1,5 @@
 # Use the golang:alpine image as the base image
-FROM golang:1.23.8
+FROM nixos/nix
 
 # Set the working directory to /app
 WORKDIR /app
@@ -7,8 +7,15 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Install any necessary dependencies
-RUN apt install -y git
+# Copy nix conf
+COPY nix-conf/* /etc/nixos/
+
+# Update nix-channel
+RUN nix-channel --update
+RUN export NIXPKGS_ALLOW_INSECURE=1
+RUN nix-build /etc/nixos#nixosConfigurations.my-machine.config.system.build.toplevel
+# Rebuild nixos
+#RUN nixos-rebuild switch --flake /etc/nixos#sisyphus
 
 # Build the Go application
 RUN go build -o main .
