@@ -13,8 +13,8 @@ import (
 )
 
 // This runs a image in the background. Set imageName to the name of Image to use (e.g. "bfirsh/reticulate-splines")
-func RunContainer(imageName string, hostName string) {
-	hostConfig := fmt.Sprintf(".#%s", hostName) // Make the hostname variable
+func RunContainer(imageName string, configPath string, hostName string) {
+	hostConfig := fmt.Sprintf("%s#%s", configPath, hostName) // Make the hostname variable
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {

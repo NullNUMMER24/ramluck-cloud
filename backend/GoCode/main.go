@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"log"
 	"ramluck-cloud/docs"
+	"ramluck-cloud/provisioning"
 	"ramluck-cloud/tables"
 	"ramluck-cloud/vm_management"
 	"time"
@@ -136,6 +137,10 @@ func main() {
 			time.Sleep(time.Minute) // Wait 1 minute before the next sync
 		}
 	}()
+
+	// Test image gen
+	provisioning.BuildDockerImage("nix-builder")
+	provisioning.RunContainer("nix-builder", "/home/jamie/git/nixos-dotfiles/", "Frankenstein")
 
 	// Start the server on port 8080 (or any other port you prefer)
 	if err := router.Run(fmt.Sprintf(":%s", config.APP_PORT)); err != nil {
