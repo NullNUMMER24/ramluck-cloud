@@ -1,33 +1,28 @@
 package provisioning
 
-func main() {
-	BuildDockerImage("nix-builder")
-	RunContainer("nix-builder", "/home/jamie/git/nixos-dotfiles/", "Frankenstein")
-	// Define the command and its arguments
-	// cmd := "nix"
-	// args := []string{
-	// 	"build",
-	// 	"--out-link",
-	// 	"image.qcow2",
-	// 	"/home/jamie/git/nixos-dotfiles#nixosConfigurations.sisyphus",
-	// }
+import (
+	"fmt"
+	"log"
+)
 
-	// // Create a new command
-	// command := exec.Command(cmd, args...)
+func BuildRamluckImageBuilder() {
+	fmt.Println("builing docker image")
+	// Build an image
+	err := BuildDockerImage("my-app", "./dockerfiles")
+	if err != nil {
+		log.Fatalf("Build failed: %v", err)
+	}
 
-	// // Set the output buffer
-	// var out bytes.Buffer
-	// var stderr bytes.Buffer
-	// command.Stdout = &out
-	// command.Stderr = &stderr
+	// Run a container
+	containerID, err := RunContainer(
+		"my-app:latest",
+		[]string{"-f", "proxmox", "--flake", "configs#host1"},
+		"my-container",
+	)
 
-	// // Run the command
-	// err := command.Run()
-	// if err != nil {
-	// 	log.Printf("Error: %v\n", err)
-	// 	log.Printf("Output: %s\n", out.String())
-	// 	log.Printf("Error output: %s\n", stderr.String())
-	// } else {
-	// 	log.Printf("Output: %s\n", out.String())
-	// }
+	if err != nil {
+		log.Fatalf("Run failed: %v", err)
+	} else {
+		fmt.Printf("Container running with ID: %s\n", containerID)
+	}
 }

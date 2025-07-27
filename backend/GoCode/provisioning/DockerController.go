@@ -7,55 +7,139 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/client"
+	"github.com/moby/moby/api/types"
+	"github.com/moby/moby/api/types/container"
+	"github.com/moby/moby/client"
 )
 
-// This runs a image in the background. Set imageName to the name of Image to use (e.g. "bfirsh/reticulate-splines")
-func RunContainer(imageName string, configPath string, hostName string) {
-	hostConfig := fmt.Sprintf("%s#%s", configPath, hostName) // Make the hostname variable
+// BuildDockerImage builds a Docker image using the Moby client
+func BuildDockerImage(imageName, dockerfilePath string) error {
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to create Docker client: %w", err)
 	}
 	defer cli.Close()
 
-	out, err := cli.ImagePull(ctx, imageName, image.PullOptions{})
+	buildContext, err := createBuildContext(dockerfilePath)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to create build context: %w", err)
 	}
-	defer out.Close()
-	io.Copy(os.Stdout, out)
+	defer os.RemoveAll(buildContext.Name())
 
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: imageName,
-		Cmd:   []string{"-f", "proxmox", "--flake", hostConfig},
-	}, nil, nil, nil, "")
+	buildOptions := types.ImageBuildOptions{
+		Tags:       []string{imageName},
+		Dockerfile: "Dockerfile",
+		Remove:     true,
+	}
+
+	buildResponse, err := cli.ImageBuild(ctx, buildContext, buildOptions)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to build image: %w", err)
+	}
+	defer buildResponse.Body.Close()
+
+	// Stream build output to stdout
+	_, err = io.Copy(os.Stdout, buildResponse.Body)
+	if err != nil {
+		return fmt.Errorf("error reading build output: %w", err)
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
-		panic(err)
-	}
-
-	fmt.Println(resp.ID)
+	fmt.Printf("\nSuccessfully built image: %s\n", imageName)
+	return nil
 }
 
-func BuildDockerImage(imageName string) {
-	tag := "latest"
-	dockerfilePath := "." // Path where your Dockerfile is
+// RunContainer creates and starts a container using the Moby client
+func RunContainer(imageName string, commandArgs []string, containerName string) (string, error) {
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		return "", fmt.Errorf("failed to create Docker client: %w", err)
+	}
+	defer cli.Close()
 
-	cmd := exec.Command("docker", "build", "-t", fmt.Sprintf("%s:%s", imageName, tag), dockerfilePath)
+	// Check if image exists locally
+	_, _, err = cli.ImageInspectWithRaw(ctx, imageName)
+	if err != nil {
+		if client.IsErrNotFound(err) {
+			// Pull image if not found
+			fmt.Printf("Pulling image: %s\n", imageName)
+			out, err := cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
+			if err != nil {
+				return "", fmt.Errorf("failed to pull image: %w", err)
+			}
+			defer out.Close()
+			io.Copy(os.Stdout, out)
+		} else {
+			return "", fmt.Errorf("failed to inspect image: %w", err)
+		}
+	}
+
+	// Create container configuration
+	containerConfig := &container.Config{
+		Image: imageName,
+		Cmd:   commandArgs,
+		Tty:   true,
+	}
+
+	// Create container
+	resp, err := cli.ContainerCreate(
+		ctx,
+		containerConfig,
+		&container.HostConfig{},
+		nil,
+		nil,
+		containerName,
+	)
+	if err != nil {
+		return "", fmt.Errorf("failed to create container: %w", err)
+	}
+	containerID := resp.ID
+
+	// Start container
+	if err := cli.ContainerStart(ctx, containerID, container.StartOptions{}); err != nil {
+		return containerID, fmt.Errorf("failed to start container: %w", err)
+	}
+
+	// Get container information
+	containerInfo, err := cli.ContainerInspect(ctx, containerID)
+	if err != nil {
+		return containerID, fmt.Errorf("container started but inspection failed: %w", err)
+	}
+
+	fmt.Printf("Container started successfully!\nID: %s\nName: %s\nStatus: %s\n",
+		containerID,
+		containerInfo.Name,
+		containerInfo.State.Status,
+	)
+
+	return containerID, nil
+}
+
+// Helper function to create build context
+func createBuildContext(dockerfilePath string) (*os.File, error) {
+	// Create a tarball of the build context
+	tmpFile, err := os.CreateTemp("", "docker-build-context-*.tar")
+	if err != nil {
+		return nil, err
+	}
+
+	cmd := exec.Command("tar", "-cf", tmpFile.Name(), "-C", dockerfilePath, ".")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	err := cmd.Run()
-	if err != nil {
-		fmt.Printf("Error building Docker image: %v\n", err)
-	} else {
-		fmt.Printf("Docker image %s:%s built successfully\n", imageName, tag)
+	if err := cmd.Run(); err != nil {
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
+		return nil, fmt.Errorf("failed to create build context tarball: %w", err)
 	}
+
+	// Reset file pointer to beginning
+	if _, err := tmpFile.Seek(0, 0); err != nil {
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
+		return nil, err
+	}
+
+	return tmpFile, nil
 }
