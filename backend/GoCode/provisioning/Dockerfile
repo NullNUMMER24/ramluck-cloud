@@ -1,11 +1,16 @@
 FROM nixos/nix:2.23.0
 
+# Enable flakes and nix-command
 RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
-# Install nixos-generators via flakes, not nix-env
-RUN nix profile install --impure nixpkgs#nixos-generators nixpkgs#gawk
+# Copy your flake
+COPY ./flake.nix /proxmox/
+COPY ./flake.lock /proxmox/
 
-# Set proper PATH (important!)
-ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${PATH}"
+WORKDIR /proxmox
 
-WORKDIR /build
+# Optionally pre-build the shell environment
+# RUN nix develop --impure --command true
+
+# Default command: drop into devShell interactively
+CMD ["/bin/bash", "-c", "nix develop --impure"]

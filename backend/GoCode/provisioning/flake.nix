@@ -2,7 +2,7 @@
   description = "Nix flake for building NixOS Proxmox images";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -20,9 +20,9 @@
             pkgs.curl
           ];
 
-          shellHook = ''
-            echo "🧪 Welcome to the NixOS image build shell!"
-          '';
+          # shellHook = ''
+          #   echo "🧪 Welcome to the NixOS image build shell!"
+          # '';
         };
 
         # Optional: expose nixos-generators as a top-level package too
