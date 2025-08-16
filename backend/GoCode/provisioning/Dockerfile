@@ -1,9 +1,11 @@
 FROM nixos/nix:2.23.0
 
-# Enable flakes and nix-command
 RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
-# Install nixos generators
-RUN nix-env -iA nixpkgs.nixos-generators
+# Install nixos-generators via flakes, not nix-env
+RUN nix profile install --impure nixpkgs#nixos-generators nixpkgs#gawk
+
+# Set proper PATH (important!)
+ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${PATH}"
 
 WORKDIR /build
