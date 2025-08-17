@@ -9,6 +9,9 @@ COPY ./flake.lock /proxmox/
 
 WORKDIR /proxmox
 
+# The container has no access to the /tmp dir
+RUN export TMPDIR=/var/tmp
+
 # Optionally pre-build the shell environment
 # RUN nix develop --impure --command true
 
