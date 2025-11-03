@@ -161,6 +161,25 @@ func DeleteApplication(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
+// GetAllApplications retrieves all applications
+// @Summary Get all applications
+// @Description Retrieve a list of all applications
+// @Tags Applications
+// @Produce json
+// @Success 200 {array} tables.Application "List of applications"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /applications [get]
+func GetAllApplications(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var apps []tables.Application
+		if err := db.Preload("VMs").Find(&apps).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not retrieve applications"})
+			return
+		}
+		c.JSON(http.StatusOK, apps)
+	}
+}
+
 // MoveApplication assigns an application to a different VM (Admin only)
 // @Summary Move an application to a different VM
 // @Description Assign an application to a different VM (Admin only)

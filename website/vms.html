@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Machines - RAMLUCK-CLOUD</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h1>RAMLUCK CLOUD</h1>
+      <p>Cloud Management Platform</p>
+    </div>
+
+    <nav>
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="dashboard.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+              Dashboard
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Resources</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="vms.html" class="nav-link active">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+              </svg>
+              Virtual Machines
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="applications.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              Applications
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="operating-systems.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+              </svg>
+              Operating Systems
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Management</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="users.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+              Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="groups.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              Groups
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Virtual Machines</h1>
+      <p class="page-description">Manage your NixOS and other virtual machines</p>
+    </div>
+
+    <div id="alert-container"></div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">All Virtual Machines</h2>
+        <button class="btn btn-primary" onclick="showCreateModal()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Deploy VM
+        </button>
+      </div>
+      <div class="table-container" id="vms-table">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create/Edit VM Modal -->
+  <div class="modal" id="vm-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Deploy Virtual Machine</h2>
+      </div>
+      <form id="vm-form">
+        <div class="form-group">
+          <label class="form-label">VM Name *</label>
+          <input type="text" class="form-input" id="vm-name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">IP Address *</label>
+          <input type="text" class="form-input" id="vm-ip" placeholder="192.168.1.10" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status *</label>
+          <select class="form-select" id="vm-status" required>
+            <option value="running">Running</option>
+            <option value="stopped">Stopped</option>
+            <option value="maintenance">Maintenance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Owner Group *</label>
+          <select class="form-select" id="vm-owner" required>
+            <option value="">Loading...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Operating System *</label>
+          <select class="form-select" id="vm-os" required>
+            <option value="">Loading...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" id="vm-description" placeholder="Optional description"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Deploy VM</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      window.location.href = 'index.html';
+    }
+
+    const API_BASE = 'http://localhost:8088/api';
+    const headers = {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    };
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      window.location.href = 'index.html';
+    }
+
+    function showAlert(message, type = 'success') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = message;
+      document.getElementById('alert-container').appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    async function loadVMs() {
+      try {
+        const response = await fetch(`${API_BASE}/vms`, { headers });
+        if (!response.ok) throw new Error('Failed to load VMs');
+        
+        const vms = await response.json();
+        displayVMs(vms);
+      } catch (error) {
+        console.error('Error loading VMs:', error);
+        document.getElementById('vms-table').innerHTML = '<p class="alert alert-error">Error loading VMs</p>';
+      }
+    }
+
+    function displayVMs(vms) {
+      const container = document.getElementById('vms-table');
+      
+      if (!vms || vms.length === 0) {
+        container.innerHTML = '<p style="text-align: center; padding: 40px; color: var(--text-secondary);">No VMs found. Deploy your first VM to get started!</p>';
+        return;
+      }
+
+      const table = `
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>IP Address</th>
+              <th>Status</th>
+              <th>Owner Group</th>
+              <th>Description</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${vms.map(vm => `
+              <tr>
+                <td><strong>${vm.VMName}</strong></td>
+                <td>${vm.VMIP}</td>
+                <td><span class="badge badge-${vm.VMStatus === 'running' ? 'success' : vm.VMStatus === 'stopped' ? 'danger' : 'warning'}">${vm.VMStatus}</span></td>
+                <td>${vm.Owner ? vm.Owner.GroupName : 'N/A'}</td>
+                <td>${vm.Description || '-'}</td>
+                <td>${new Date(vm.CreatedAt).toLocaleDateString()}</td>
+                <td>
+                  <button class="btn btn-sm btn-danger" onclick="deleteVM(${vm.VMID}, '${vm.VMName}')">Delete</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      container.innerHTML = table;
+    }
+
+    async function loadGroups() {
+      try {
+        const response = await fetch(`${API_BASE}/groups`, { headers });
+        if (!response.ok) throw new Error('Failed to load groups');
+        
+        const groups = await response.json();
+        const select = document.getElementById('vm-owner');
+        select.innerHTML = '<option value="">Select a group</option>' +
+          groups.map(g => `<option value="${g.GroupID}">${g.GroupName}</option>`).join('');
+      } catch (error) {
+        console.error('Error loading groups:', error);
+      }
+    }
+
+    async function loadOS() {
+      try {
+        const response = await fetch(`${API_BASE}/os`, { headers });
+        if (!response.ok) throw new Error('Failed to load OS');
+        
+        const osList = await response.json();
+        const select = document.getElementById('vm-os');
+        select.innerHTML = '<option value="">Select an OS</option>' +
+          osList.map(os => `<option value="${os.OSID}">${os.OSName} ${os.OSVersion}</option>`).join('');
+      } catch (error) {
+        console.error('Error loading OS:', error);
+      }
+    }
+
+    function showCreateModal() {
+      document.getElementById('modal-title').textContent = 'Deploy Virtual Machine';
+      document.getElementById('vm-form').reset();
+      document.getElementById('vm-modal').classList.add('active');
+      loadGroups();
+      loadOS();
+    }
+
+    function closeModal() {
+      document.getElementById('vm-modal').classList.remove('active');
+    }
+
+    document.getElementById('vm-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const vmData = {
+        vm_name: document.getElementById('vm-name').value,
+        vm_ip: document.getElementById('vm-ip').value,
+        vm_status: document.getElementById('vm-status').value,
+        owner_id: parseInt(document.getElementById('vm-owner').value),
+        os_id: parseInt(document.getElementById('vm-os').value),
+        description: document.getElementById('vm-description').value
+      };
+
+      try {
+        const response = await fetch(`${API_BASE}/vms`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(vmData)
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create VM');
+        }
+
+        showAlert('VM deployed successfully!');
+        closeModal();
+        loadVMs();
+      } catch (error) {
+        console.error('Error creating VM:', error);
+        showAlert(error.message, 'error');
+      }
+    });
+
+    async function deleteVM(id, name) {
+      if (!confirm(`Are you sure you want to delete VM "${name}"?`)) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/vms/${id}`, {
+          method: 'DELETE',
+          headers
+        });
+
+        if (!response.ok) throw new Error('Failed to delete VM');
+
+        showAlert('VM deleted successfully!');
+        loadVMs();
+      } catch (error) {
+        console.error('Error deleting VM:', error);
+        showAlert(error.message, 'error');
+      }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('vm-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'vm-modal') closeModal();
+    });
+
+    loadVMs();
+  </script>
+</body>
+</html>

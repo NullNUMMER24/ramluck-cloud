@@ -8,8 +8,6 @@ services:
     container_name: ramluckcloud-database
     volumes:
       - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
-      #- ./backend/database/pgdata:/var/lib/postgresql/data
-      - /tmp/pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:

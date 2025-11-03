@@ -3,24 +3,247 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RAMLUCK-CLOUD Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Dashboard - RAMLUCK-CLOUD</title>
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
-  <header>
-    <h1>RAMLUCK-CLOUD Dashboard</h1>
-  </header>
-  <div class="container">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h1>RAMLUCK CLOUD</h1>
+      <p>Cloud Management Platform</p>
+    </div>
+
     <nav>
-      <a href="users.html">View All Users</a>
-      <a href="groups.html">View All Groups</a>
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="dashboard.html" class="nav-link active">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+              Dashboard
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Resources</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="vms.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+              </svg>
+              Virtual Machines
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="applications.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              Applications
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="operating-systems.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+              </svg>
+              Operating Systems
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Management</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="users.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+              Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="groups.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              Groups
+            </a>
+          </li>
+        </ul>
+      </div>
     </nav>
-  <!-- Add this script to check if user is authenticated otherwise redirect to login-->
+
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-description">Welcome to your cloud management platform</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total VMs</div>
+        <div class="stat-value" id="total-vms">-</div>
+        <div class="stat-change positive">Active and running</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-label">Applications</div>
+        <div class="stat-value" id="total-apps">-</div>
+        <div class="stat-change">Deployed applications</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-label">Users</div>
+        <div class="stat-value" id="total-users">-</div>
+        <div class="stat-change">Active users</div>
+      </div>
+      <div class="stat-card danger">
+        <div class="stat-label">Groups</div>
+        <div class="stat-value" id="total-groups">-</div>
+        <div class="stat-change">Access groups</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Recent Virtual Machines</h2>
+        <a href="vms.html" class="btn btn-sm btn-primary">View All</a>
+      </div>
+      <div class="table-container" id="recent-vms">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Quick Actions</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <button class="btn btn-primary" onclick="window.location.href='vms.html'">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Deploy VM
+        </button>
+        <button class="btn btn-success" onclick="window.location.href='applications.html'">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add Application
+        </button>
+        <button class="btn btn-secondary" onclick="window.location.href='users.html'">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          Manage Users
+        </button>
+        <button class="btn btn-secondary" onclick="window.location.href='groups.html'">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          Manage Groups
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const token = localStorage.getItem('authToken');
     if (!token) {
-      window.location.href = 'index.html'; // Redirect to login if not logged in
+      window.location.href = 'index.html';
     }
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      window.location.href = 'index.html';
+    }
+
+    // Load dashboard stats
+    async function loadStats() {
+      try {
+        const headers = { 'Authorization': 'Bearer ' + token };
+
+        const [vmsRes, appsRes, usersRes, groupsRes] = await Promise.all([
+          fetch('http://localhost:8088/api/vms', { headers }),
+          fetch('http://localhost:8088/api/applications', { headers }).catch(() => ({ ok: false })),
+          fetch('http://localhost:8088/api/users', { headers }),
+          fetch('http://localhost:8088/api/groups', { headers })
+        ]);
+
+        if (vmsRes.ok) {
+          const vms = await vmsRes.json();
+          document.getElementById('total-vms').textContent = vms.length || 0;
+          displayRecentVMs(vms.slice(0, 5));
+        }
+
+        if (appsRes.ok) {
+          const apps = await appsRes.json();
+          document.getElementById('total-apps').textContent = apps.length || 0;
+        }
+
+        if (usersRes.ok) {
+          const users = await usersRes.json();
+          document.getElementById('total-users').textContent = users.length || 0;
+        }
+
+        if (groupsRes.ok) {
+          const groups = await groupsRes.json();
+          document.getElementById('total-groups').textContent = groups.length || 0;
+        }
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+
+    function displayRecentVMs(vms) {
+      const container = document.getElementById('recent-vms');
+      
+      if (!vms || vms.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No VMs found. Create your first VM to get started!</p>';
+        return;
+      }
+
+      const table = `
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>IP Address</th>
+              <th>Status</th>
+              <th>Owner</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${vms.map(vm => `
+              <tr>
+                <td><strong>${vm.VMName}</strong></td>
+                <td>${vm.VMIP}</td>
+                <td><span class="badge badge-${vm.VMStatus === 'running' ? 'success' : vm.VMStatus === 'stopped' ? 'danger' : 'warning'}">${vm.VMStatus}</span></td>
+                <td>${vm.Owner ? vm.Owner.GroupName : 'N/A'}</td>
+                <td>${new Date(vm.CreatedAt).toLocaleDateString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      container.innerHTML = table;
+    }
+
+    loadStats();
   </script>
 </body>
 </html>

@@ -62,6 +62,9 @@ func main() {
 	}
 
 	db.AutoMigrate(&tables.User{}, &tables.Group{}, &tables.Hardware{}, &tables.Application{}, &tables.OperatingSystem{}, &tables.VM{})
+	// Migrate NixOS and Kubernetes tables
+	db.Table("nixos_configs").AutoMigrate(&api_functions.NixOSConfig{})
+	db.Table("kubernetes_apps").AutoMigrate(&api_functions.KubernetesApp{})
 	// Create sample entries
 	api_functions.CreateSampleEntries(db)
 
@@ -118,10 +121,22 @@ func main() {
 		api.POST("/vms/:id/applications", api_functions.AuthMiddleware(db), api_functions.ManageVMApplications(db))
 
 		// Applications API
+		api.GET("/applications", api_functions.AuthMiddleware(db), api_functions.GetAllApplications(db))
 		api.POST("/applications", api_functions.AuthMiddleware(db), api_functions.CreateApplication(db))
 		api.PUT("/applications/:id", api_functions.AuthMiddleware(db), api_functions.UpdateApplication(db))
 		api.DELETE("/applications/:id", api_functions.AuthMiddleware(db), api_functions.DeleteApplication(db))
 		api.POST("/applications/:id/move", api_functions.AuthMiddleware(db), api_functions.MoveApplication(db))
+
+		// NixOS Configuration API
+		api.POST("/nixos/configs", api_functions.AuthMiddleware(db), api_functions.CreateNixOSConfig(db))
+		api.GET("/nixos/configs", api_functions.AuthMiddleware(db), api_functions.GetAllNixOSConfigs(db))
+		api.GET("/nixos/configs/:id", api_functions.AuthMiddleware(db), api_functions.GetNixOSConfigStatus(db))
+		api.POST("/nixos/build", api_functions.AuthMiddleware(db), api_functions.BuildNixOSImage(db))
+		api.POST("/nixos/deploy", api_functions.AuthMiddleware(db), api_functions.DeployToProxmox(db))
+
+		// Kubernetes API
+		api.POST("/kubernetes/deploy", api_functions.AuthMiddleware(db), api_functions.DeployKubernetesApp(db))
+		api.GET("/kubernetes/deployments", api_functions.AuthMiddleware(db), api_functions.GetKubernetesDeployments(db))
 	}
 
 	// Server Swagger Doc
