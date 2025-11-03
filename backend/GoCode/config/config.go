@@ -10,7 +10,7 @@ var (
 	// ADMIN_PASSWORD = os.Getenv("ADMIN_PASSWORD")
 	// JWT_SECRET_KEY = os.Getenv("JWT_SECRET")
 	DB_PASSWORD    = "123"
-	DB_SERVER      = "localhost"
+	DB_SERVER      = "127.0.0.1"
 	DB_NAME        = "RamluckCloud"
 	DB_USER        = "postgres"
 	APP_PORT       = "8088"
