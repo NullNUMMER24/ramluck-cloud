@@ -3,21 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>All Users</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-  </style>
+  <title>Users - RAMLUCK-CLOUD</title>
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
-  <h1>User List</h1>
-  <div id="user-table">Loading...</div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h1>RAMLUCK CLOUD</h1>
+      <p>Cloud Management Platform</p>
+    </div>
+
+    <nav>
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="dashboard.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+              Dashboard
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Resources</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="vms.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+              </svg>
+              Virtual Machines
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="applications.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              Applications
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="operating-systems.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+              </svg>
+              Operating Systems
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Management</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="users.html" class="nav-link active">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+              Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="groups.html" class="nav-link">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              Groups
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Users</h1>
+      <p class="page-description">Manage system users and access</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">All Users</h2>
+      </div>
+      <div class="table-container" id="user-table">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const token = localStorage.getItem('authToken');
     if (!token) {
-      window.location.href = 'index.html'; // Redirect if not logged in
+      window.location.href = 'index.html';
+    }
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      window.location.href = 'index.html';
     }
 
     fetch('http://localhost:8088/api/users', {
@@ -32,35 +126,35 @@
       return response.json();
     })
     .then(users => {
-      const table = document.createElement('table');
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th>UserID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${users.map(user => `
+      const table = `
+        <table>
+          <thead>
             <tr>
-              <td>${user.UserID}</td>
-              <td>${user.Username}</td>
-              <td>${user.Email}</td>
-              <td>${user.Role}</td>
-              <td>${new Date(user.CreatedAt).toLocaleString()}</td>
+              <th>UserID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Created At</th>
             </tr>
-          `).join('')}
-        </tbody>
+          </thead>
+          <tbody>
+            ${users.map(user => `
+              <tr>
+                <td>${user.UserID}</td>
+                <td><strong>${user.Username}</strong></td>
+                <td>${user.Email}</td>
+                <td><span class="badge badge-${user.Role === 'admin' ? 'danger' : 'info'}">${user.Role}</span></td>
+                <td>${new Date(user.CreatedAt).toLocaleString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
       `;
-      document.getElementById('user-table').innerHTML = '';
-      document.getElementById('user-table').appendChild(table);
+      document.getElementById('user-table').innerHTML = table;
     })
     .catch(error => {
       console.error(error);
-      document.getElementById('user-table').innerText = "Error loading users.";
+      document.getElementById('user-table').innerHTML = '<p class="alert alert-error">Error loading users.</p>';
     });
   </script>
 </body>

@@ -118,6 +118,7 @@ func main() {
 		api.POST("/vms/:id/applications", api_functions.AuthMiddleware(db), api_functions.ManageVMApplications(db))
 
 		// Applications API
+		api.GET("/applications", api_functions.AuthMiddleware(db), api_functions.GetAllApplications(db))
 		api.POST("/applications", api_functions.AuthMiddleware(db), api_functions.CreateApplication(db))
 		api.PUT("/applications/:id", api_functions.AuthMiddleware(db), api_functions.UpdateApplication(db))
 		api.DELETE("/applications/:id", api_functions.AuthMiddleware(db), api_functions.DeleteApplication(db))
